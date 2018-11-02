@@ -5,7 +5,8 @@ WORKDIR /go/src/github.com/plopezm/cloud-kaiser
 COPY glide.lock glide.yaml ./
 COPY vendor vendor
 COPY core core
-COPY services services
+COPY query-service query-service
+COPY task-service task-service
 
 RUN go install ./...
 

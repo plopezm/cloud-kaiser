@@ -12,7 +12,7 @@ import (
 	"strconv"
 )
 
-func newRouter() (router *mux.Router) {
+func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
 	router.HandleFunc("/v1/tasks", listTasksHandler).
 		Methods("GET")

@@ -7,9 +7,10 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/search"
-	"github.com/plopezm/cloud-kaiser/services/query-service/v1"
+	"github.com/plopezm/cloud-kaiser/query-service/v1"
 	"github.com/tinrab/retry"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -71,4 +72,8 @@ func main() {
 	})
 	defer event.Close()
 
+	router := v1.NewRouter()
+	if err := http.ListenAndServe(":8080", router); err != nil {
+		log.Fatal(err)
+	}
 }

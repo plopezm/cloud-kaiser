@@ -15,8 +15,9 @@ services:
     restart: "always"
   elasticsearch:
     image: "docker.elastic.co/elasticsearch/elasticsearch:6.2.3"
-  tasks-service:
+  task-service:
     build: "."
+    command: "task-service"
     depends_on:
     - "postgres"
     - "nats"
@@ -29,6 +30,7 @@ services:
       NATS_ADDRESS: "nats:4222"
   query-service:
     build: "."
+    command: "query-service"
     depends_on:
     - "postgres"
     - "nats"

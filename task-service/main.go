@@ -6,7 +6,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/event"
-	"github.com/plopezm/cloud-kaiser/services/task-service/v1"
+	"github.com/plopezm/cloud-kaiser/task-service/v1"
 	"github.com/tinrab/retry"
 	"log"
 	"net/http"
