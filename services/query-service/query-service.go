@@ -6,6 +6,7 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/search"
+	"github.com/plopezm/cloud-kaiser/services/query-service/v1"
 	"github.com/tinrab/retry"
 	"log"
 	"time"
@@ -54,12 +55,17 @@ func main() {
 
 	// Connect to NATS
 	retry.ForeverSleep(2*time.Second, func(_ int) error {
-		repo, err := event.NewNats(fmt.Sprintf("nats://%s", config.NatsAddress))
+		messaging, err := event.NewNats(fmt.Sprintf("nats://%s", config.NatsAddress))
 		if err != nil {
 			log.Println(err)
 			return err
 		}
-		event.SetEventStore(repo)
+		err = messaging.OnTaskCreated(event.TaskCreated, v1.OnTaskCreated)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		event.SetEventStore(messaging)
 		return nil
 	})
 	defer event.Close()

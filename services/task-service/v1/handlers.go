@@ -13,7 +13,7 @@ import (
 
 func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
-	router.HandleFunc("/tasks", createTaskHandler).
+	router.HandleFunc("/v1/tasks", createTaskHandler).
 		Methods("POST")
 	return
 }
