@@ -37,8 +37,7 @@ func (r *ElasticSearchRepository) InsertTask(ctx context.Context, task types.Job
 	return err
 }
 
-func (r *ElasticSearchRepository) ListTasks(ctx context.Context, skip uint64, take uint64) ([]types.JobTask, error) {
-	query := ctx.Value("elastic_search_query").(string)
+func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, offset uint64, limit uint64) ([]types.JobTask, error) {
 	result, err := r.client.Search().
 		Index("tasks").
 		Query(
@@ -47,8 +46,8 @@ func (r *ElasticSearchRepository) ListTasks(ctx context.Context, skip uint64, ta
 				PrefixLength(1).
 				CutoffFrequency(0.0001),
 		).
-		From(int(skip)).
-		Size(int(take)).
+		From(int(offset)).
+		Size(int(limit)).
 		Do(ctx)
 	if err != nil {
 		return nil, err

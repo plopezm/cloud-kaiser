@@ -32,7 +32,7 @@ func (eventStore *NatsEventStore) Close() {
 func (eventStore *NatsEventStore) PublishTaskCreated(task types.JobTask) error {
 	return eventStore.publishMessage(Envelope{
 		Destination: TaskCreated,
-		Content: task,
+		Content:     task,
 	})
 }
 

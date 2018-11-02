@@ -4,3 +4,11 @@ import:
   version: v1.6.0
 - package: github.com/olivere/elastic
   version: v6.2.11
+- package: github.com/kelseyhightower/envconfig
+  version: v1.3.0
+- package: github.com/tinrab/retry
+  version: v1.0.0
+- package: github.com/gorilla/mux
+  version: v1.6.2
+- package: github.com/gorilla/handlers
+  version: v1.4.0
