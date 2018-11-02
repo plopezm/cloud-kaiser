@@ -1,14 +1,14 @@
-package search
+package db
 
 import (
 	"context"
-	"github.com/plopezm/cloud-kaiser/types"
+	"github.com/plopezm/cloud-kaiser/core/types"
 )
 
 type Repository interface {
 	Close()
 	InsertTask(ctx context.Context, job types.JobTask) error
-	FindTasks(ctx context.Context, query string, page uint64, limit uint64) ([]types.JobTask, error)
+	ListTasks(ctx context.Context, page uint64, limit uint64) ([]types.JobTask, error)
 }
 
 var impl Repository
@@ -25,6 +25,6 @@ func InsertTask(ctx context.Context, job types.JobTask) error {
 	return impl.InsertTask(ctx, job)
 }
 
-func FindTasks(ctx context.Context, query string, offset uint64, limit uint64) ([]types.JobTask, error) {
-	return impl.FindTasks(ctx, query, offset, limit)
+func ListTasks(ctx context.Context, offset uint64, limit uint64) ([]types.JobTask, error) {
+	return impl.ListTasks(ctx, offset, limit)
 }

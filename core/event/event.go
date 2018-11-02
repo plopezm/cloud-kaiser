@@ -1,6 +1,6 @@
 package event
 
-import "github.com/plopezm/cloud-kaiser/types"
+import "github.com/plopezm/cloud-kaiser/core/types"
 
 type EventStore interface {
 	Close()

@@ -3,10 +3,10 @@ package v1
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"github.com/plopezm/cloud-kaiser/db"
-	"github.com/plopezm/cloud-kaiser/event"
-	"github.com/plopezm/cloud-kaiser/types"
-	"github.com/plopezm/cloud-kaiser/util"
+	"github.com/plopezm/cloud-kaiser/core/db"
+	"github.com/plopezm/cloud-kaiser/core/event"
+	"github.com/plopezm/cloud-kaiser/core/types"
+	"github.com/plopezm/cloud-kaiser/core/util"
 	"log"
 	"net/http"
 )

@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/plopezm/cloud-kaiser/types"
+	"github.com/plopezm/cloud-kaiser/core/types"
 	"strings"
 	"time"
 )

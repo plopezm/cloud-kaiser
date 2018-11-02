@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"github.com/nats-io/go-nats"
-	"github.com/plopezm/cloud-kaiser/types"
+	"github.com/plopezm/cloud-kaiser/core/types"
 )
 
 type NatsEventStore struct {

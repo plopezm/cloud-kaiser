@@ -3,20 +3,20 @@ package main
 import (
 	"fmt"
 	"github.com/kelseyhightower/envconfig"
-	"github.com/plopezm/cloud-kaiser/db"
-	"github.com/plopezm/cloud-kaiser/event"
-	"github.com/plopezm/cloud-kaiser/task-service/v1"
+	"github.com/plopezm/cloud-kaiser/core/db"
+	"github.com/plopezm/cloud-kaiser/core/event"
+	"github.com/plopezm/cloud-kaiser/core/search"
 	"github.com/tinrab/retry"
 	"log"
-	"net/http"
 	"time"
 )
 
 type Config struct {
-	PostgresDB       string `envconfig:"POSTGRES_DB"`
-	PostgresUser     string `envconfig:"POSTGRES_USER"`
-	PostgresPassword string `envconfig:"POSTGRES_PASSWORD"`
-	NatsAddress      string `envconfig:"NATS_ADDRESS"`
+	PostgresDB           string `envconfig:"POSTGRES_DB"`
+	PostgresUser         string `envconfig:"POSTGRES_USER"`
+	PostgresPassword     string `envconfig:"POSTGRES_PASSWORD"`
+	NatsAddress          string `envconfig:"NATS_ADDRESS"`
+	ElasticSearchAddress string `envconfig:"ELASTICSEARCH_ADDRESS"`
 }
 
 func main() {
@@ -40,6 +40,18 @@ func main() {
 	})
 	defer db.Close()
 
+	// Connect to ElasticSearch
+	retry.ForeverSleep(2*time.Second, func(_ int) error {
+		es, err := search.NewElasticSearch(fmt.Sprintf("http://%s", config.ElasticSearchAddress))
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		search.SetRepository(es)
+		return nil
+	})
+	defer search.Close()
+
 	// Connect to NATS
 	retry.ForeverSleep(2*time.Second, func(_ int) error {
 		repo, err := event.NewNats(fmt.Sprintf("nats://%s", config.NatsAddress))
@@ -52,8 +64,4 @@ func main() {
 	})
 	defer event.Close()
 
-	router := v1.NewRouter()
-	if err := http.ListenAndServe(":8080", router); err != nil {
-		log.Fatal(err)
-	}
 }

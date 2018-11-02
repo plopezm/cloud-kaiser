@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olivere/elastic"
-	"github.com/plopezm/cloud-kaiser/types"
+	"github.com/plopezm/cloud-kaiser/core/types"
 	"log"
 )
 
