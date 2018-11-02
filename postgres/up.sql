@@ -14,16 +14,6 @@ CREATE TABLE tasks (
   FOREIGN KEY (on_failure_name, on_failure_version) REFERENCES tasks(name, version)
 );
 
-DROP TABLE IF EXISTS arguments;
-CREATE TABLE arguments (
-  name            VARCHAR NOT NULL,
-  job_name        VARCHAR NOT NULL,
-  job_version     VARCHAR NOT NULL,
-  value           VARCHAR,
-  PRIMARY KEY (name),
-  FOREIGN KEY (job_name, job_version) REFERENCES jobs(name, version)
-);
-
 DROP TABLE IF EXISTS jobs;
 CREATE TABLE jobs (
   name            VARCHAR NOT NULL,
@@ -34,6 +24,17 @@ CREATE TABLE jobs (
   status          SMALLINT NOT NULL,
   hash            VARCHAR,
   PRIMARY KEY(name, version)
+);
+
+
+DROP TABLE IF EXISTS arguments;
+CREATE TABLE arguments (
+  name            VARCHAR NOT NULL,
+  job_name        VARCHAR NOT NULL,
+  job_version     VARCHAR NOT NULL,
+  value           VARCHAR,
+  PRIMARY KEY (name),
+  FOREIGN KEY (job_name, job_version) REFERENCES jobs(name, version)
 );
 
 DROP TABLE IF EXISTS jobs_tasks;
