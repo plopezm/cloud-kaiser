@@ -1,0 +1,6 @@
+package: github.com/plopezm/cloud-kaiser
+import:
+- package: github.com/nats-io/go-nats
+  version: v1.6.0
+- package: github.com/olivere/elastic
+  version: v6.2.11
