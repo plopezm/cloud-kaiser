@@ -12,11 +12,13 @@ import (
 	"strconv"
 )
 
+const handlersPrefix = "/v1"
+
 func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
-	router.HandleFunc("/v1/tasks", listTasksHandler).
+	router.HandleFunc(handlersPrefix+"/tasks", listTasksHandler).
 		Methods("GET", "OPTIONS")
-	router.HandleFunc("/v1/search", searchTaskHandler).
+	router.HandleFunc(handlersPrefix+"/search", searchTaskHandler).
 		Methods("GET", "OPTIONS")
 	return
 }

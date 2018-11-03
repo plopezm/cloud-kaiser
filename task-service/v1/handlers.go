@@ -11,9 +11,11 @@ import (
 	"net/http"
 )
 
+const handlersPrefix = "/v1"
+
 func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
-	router.HandleFunc("/v1/tasks", createTaskHandler).
+	router.HandleFunc(handlersPrefix+"/tasks", createTaskHandler).
 		Methods("POST")
 	return
 }
