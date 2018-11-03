@@ -29,7 +29,7 @@ func createTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := db.InsertTask(ctx, task); err != nil {
 		log.Println(err)
-		util.ResponseError(w, http.StatusInternalServerError, "Failed to create meow")
+		util.ResponseError(w, http.StatusInternalServerError, "Failed to create task")
 		return
 	}
 

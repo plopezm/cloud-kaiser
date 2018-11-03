@@ -41,7 +41,7 @@ func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, o
 	result, err := r.client.Search().
 		Index("tasks").
 		Query(
-			elastic.NewMultiMatchQuery(query, "body").
+			elastic.NewMultiMatchQuery(query, "name").
 				Fuzziness("3").
 				PrefixLength(1).
 				CutoffFrequency(0.0001),

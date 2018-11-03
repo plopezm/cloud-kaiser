@@ -15,9 +15,9 @@ import (
 func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
 	router.HandleFunc("/v1/tasks", listTasksHandler).
-		Methods("GET")
+		Methods("GET", "OPTIONS")
 	router.HandleFunc("/v1/search", searchTaskHandler).
-		Methods("GET")
+		Methods("GET", "OPTIONS")
 	return
 }
 
@@ -95,7 +95,7 @@ func listTasksHandler(w http.ResponseWriter, r *http.Request) {
 	meows, err := db.ListTasks(ctx, offset, limit)
 	if err != nil {
 		log.Println(err)
-		util.ResponseError(w, http.StatusInternalServerError, "Could not fetch meows")
+		util.ResponseError(w, http.StatusInternalServerError, "Could not fetch tasks")
 		return
 	}
 

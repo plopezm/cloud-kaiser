@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     ports:
-    - "5432"
+    - "5432:5432"
   nats:
     image: "nats-streaming:0.9.2"
     restart: "always"
@@ -43,3 +43,10 @@ services:
       POSTGRES_PASSWORD: "postgres"
       NATS_ADDRESS: "nats:4222"
       ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
+  nginx:
+    build: "./nginx"
+    ports:
+    - "8080:80"
+    depends_on:
+    - "task-service"
+    - "query-service"
