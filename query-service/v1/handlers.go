@@ -18,6 +18,10 @@ func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
 	router.HandleFunc(handlersPrefix+"/tasks", listTasksHandler).
 		Methods("GET", "OPTIONS")
+	router.HandleFunc(handlersPrefix+"/tasks/{name}", getTaskByName).
+		Methods("GET", "OPTIONS")
+	router.HandleFunc(handlersPrefix+"/tasks/{name}/version/{version}", getTaskByNameAndVersion).
+		Methods("GET", "OPTIONS")
 	router.HandleFunc(handlersPrefix+"/search", searchTaskHandler).
 		Methods("GET", "OPTIONS")
 	return
@@ -95,6 +99,43 @@ func listTasksHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Fetch meows
 	meows, err := db.ListTasks(ctx, offset, limit)
+	if err != nil {
+		log.Println(err)
+		util.ResponseError(w, http.StatusInternalServerError, "Could not fetch tasks")
+		return
+	}
+
+	util.ResponseOk(w, meows)
+}
+
+func getTaskByName(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var err error
+
+	vars := mux.Vars(r)
+	taskName := vars["name"]
+
+	// Fetch meows
+	meows, err := db.FindTaskByName(ctx, taskName)
+	if err != nil {
+		log.Println(err)
+		util.ResponseError(w, http.StatusInternalServerError, "Could not fetch tasks")
+		return
+	}
+
+	util.ResponseOk(w, meows)
+}
+
+func getTaskByNameAndVersion(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	var err error
+
+	vars := mux.Vars(r)
+	taskName := vars["name"]
+	version := vars["version"]
+
+	// Fetch meows
+	meows, err := db.FindTaskByNameAndVersion(ctx, taskName, version)
 	if err != nil {
 		log.Println(err)
 		util.ResponseError(w, http.StatusInternalServerError, "Could not fetch tasks")

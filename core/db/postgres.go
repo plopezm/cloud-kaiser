@@ -88,3 +88,72 @@ func (r *PostgresRepository) ListTasks(ctx context.Context, offset uint64, limit
 	}
 	return tasks, nil
 }
+
+func (r *PostgresRepository) FindTaskByName(ctx context.Context, name string) ([]types.JobTask, error) {
+	rows, err := r.db.Query(
+		`SELECT name, version, created_at, script, on_success_name, on_success_version, on_failure_name, on_failure_version 
+				FROM tasks WHERE name = $1 ORDER BY name DESC, version DESC`, name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	tasks := []types.JobTask{}
+	for rows.Next() {
+		task := types.JobTask{}
+		task.Script = new(string)
+		var onSuccessName sql.NullString
+		var onSuccessVersion sql.NullString
+		var onFailureName sql.NullString
+		var onFailureVersion sql.NullString
+		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, task.Script, &onSuccessName, &onSuccessVersion, &onFailureName, &onFailureVersion); err == nil {
+			if onSuccessName.Valid && onSuccessVersion.Valid {
+				task.OnSuccess = fmt.Sprintf("%s:%s", onSuccessName.String, onSuccessVersion.String)
+			}
+			if onFailureName.Valid && onFailureVersion.Valid {
+				task.OnFailure = fmt.Sprintf("%s:%s", onFailureName.String, onFailureVersion.String)
+			}
+			tasks = append(tasks, task)
+		} else {
+			return nil, err
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return tasks, nil
+}
+
+func (r *PostgresRepository) FindTaskByNameAndVersion(ctx context.Context, name string, version string) (*types.JobTask, error) {
+	rows, err := r.db.Query(
+		`SELECT name, version, created_at, script, on_success_name, on_success_version, on_failure_name, on_failure_version 
+				FROM tasks WHERE name = $1 AND version = $2 ORDER BY name DESC, version DESC`, name, version)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var task *types.JobTask
+	if rows.Next() {
+		task = &types.JobTask{}
+		task.Script = new(string)
+		var onSuccessName sql.NullString
+		var onSuccessVersion sql.NullString
+		var onFailureName sql.NullString
+		var onFailureVersion sql.NullString
+		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, task.Script, &onSuccessName, &onSuccessVersion, &onFailureName, &onFailureVersion); err == nil {
+			if onSuccessName.Valid && onSuccessVersion.Valid {
+				task.OnSuccess = fmt.Sprintf("%s:%s", onSuccessName.String, onSuccessVersion.String)
+			}
+			if onFailureName.Valid && onFailureVersion.Valid {
+				task.OnFailure = fmt.Sprintf("%s:%s", onFailureName.String, onFailureVersion.String)
+			}
+		} else {
+			return nil, err
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return task, nil
+}
