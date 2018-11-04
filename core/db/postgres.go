@@ -164,9 +164,17 @@ func (r *PostgresRepository) InsertJobArgument(ctx context.Context, job *types.J
 	if job == nil {
 		return errors.New("Job instance cannot be null")
 	}
-	_, err := r.db.Exec(`INSERT INTO arguments(name, value, job_name, job_version )
-								VALUES($1, $2, $3, $4)`,
-		argument.Name, argument.Value, job.Name, job.Version)
+	var query = `INSERT INTO arguments(name, value, job_name, job_version )
+								VALUES($1, $2, $3, $4)`
+
+	var err error
+	tx, ok := ctx.Value("tx").(*sql.Tx)
+	if ok {
+		_, err = tx.Exec(query, argument.Name, argument.Value, job.Name, job.Version)
+	} else {
+		_, err = r.db.Exec(query, argument.Name, argument.Value, job.Name, job.Version)
+	}
+
 	return err
 }
 
@@ -205,10 +213,11 @@ func (r *PostgresRepository) InsertJob(ctx context.Context, job types.Job) error
 		}
 	}
 
+	contextWithTx := context.WithValue(ctx, "tx", tx)
 	//Insert arguments
 	for _, jobArg := range job.Parameters {
 		// if someone fails the argument is not added but the job insertion does not fail
-		err := r.InsertJobArgument(ctx, &job, jobArg)
+		err := r.InsertJobArgument(contextWithTx, &job, jobArg)
 		if err != nil {
 			log.Println("Error creating argument", err)
 		}
