@@ -6,7 +6,7 @@ COPY glide.lock glide.yaml ./
 COPY vendor vendor
 COPY core core
 COPY query-service query-service
-COPY repository-service task-service
+COPY repository-service repository-service
 
 RUN go install ./...
 

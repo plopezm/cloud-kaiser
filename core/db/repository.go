@@ -10,7 +10,7 @@ type Repository interface {
 	// InsertTask Creates a new task
 	InsertTask(ctx context.Context, job types.JobTask) error
 	// ListTasks Returns a paginated list of tasks
-	ListTasks(ctx context.Context, page uint64, limit uint64) ([]types.JobTask, error)
+	ListTasks(ctx context.Context, offset uint64, limit uint64) ([]types.JobTask, error)
 	// FindTaskByName Returns all versions of a task by name
 	FindTaskByName(ctx context.Context, name string) ([]types.JobTask, error)
 	// FindTaskByNameAndVersion Returns a version of a task
@@ -19,7 +19,7 @@ type Repository interface {
 	InsertJobArgument(ctx context.Context, job *types.Job, argument types.JobArgs) error
 
 	InsertJob(ctx context.Context, job types.Job) error
-	ListJobs(ctx context.Context, page uint64, limit uint64) ([]types.Job, error)
+	ListJobs(ctx context.Context, offset uint64, limit uint64) ([]types.Job, error)
 }
 
 var impl Repository

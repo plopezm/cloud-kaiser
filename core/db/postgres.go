@@ -233,3 +233,29 @@ func (r *PostgresRepository) insertJobTaskRelation(tx *sql.Tx, job *types.Job, t
 		job.Name, job.Version, task.Name, task.Version)
 	return err
 }
+
+func (r *PostgresRepository) ListJobs(ctx context.Context, offset uint64, limit uint64) ([]types.Job, error) {
+	rows, err := r.db.Query(
+		`SELECT name, version, created_at, activation_type, duration 
+				FROM jobs ORDER BY name DESC, version DESC OFFSET $1 LIMIT $2`, offset, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	jobs := []types.Job{}
+	for rows.Next() {
+		var job types.Job
+		var duration sql.NullString
+		if err = rows.Scan(&job.Name, &job.Version, &job.CreatedAt, &job.Activation.Type, &duration); err == nil {
+			if duration.Valid {
+				job.Activation.Duration = duration.String
+			}
+			jobs = append(jobs, job)
+		} else {
+			return nil, err
+		}
+	}
+
+	return jobs, nil
+}
