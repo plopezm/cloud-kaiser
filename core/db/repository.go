@@ -7,10 +7,19 @@ import (
 
 type Repository interface {
 	Close()
+	// InsertTask Creates a new task
 	InsertTask(ctx context.Context, job types.JobTask) error
+	// ListTasks Returns a paginated list of tasks
 	ListTasks(ctx context.Context, page uint64, limit uint64) ([]types.JobTask, error)
+	// FindTaskByName Returns all versions of a task by name
 	FindTaskByName(ctx context.Context, name string) ([]types.JobTask, error)
+	// FindTaskByNameAndVersion Returns a version of a task
 	FindTaskByNameAndVersion(ctx context.Context, name string, version string) (*types.JobTask, error)
+
+	InsertJobArgument(ctx context.Context, job *types.Job, argument types.JobArgs) error
+
+	InsertJob(ctx context.Context, job types.Job) error
+	ListJobs(ctx context.Context, page uint64, limit uint64) ([]types.Job, error)
 }
 
 var impl Repository
@@ -37,4 +46,16 @@ func FindTaskByName(ctx context.Context, name string) ([]types.JobTask, error) {
 
 func FindTaskByNameAndVersion(ctx context.Context, name string, version string) (*types.JobTask, error) {
 	return impl.FindTaskByNameAndVersion(ctx, name, version)
+}
+
+func InsertJobArgument(ctx context.Context, job *types.Job, argument types.JobArgs) error {
+	return impl.InsertJobArgument(ctx, job, argument)
+}
+
+func InsertJob(ctx context.Context, job types.Job) error {
+	return impl.InsertJob(ctx, job)
+}
+
+func ListJobs(ctx context.Context, page uint64, limit uint64) ([]types.Job, error) {
+	return impl.ListJobs(ctx, page, limit)
 }

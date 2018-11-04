@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/plopezm/cloud-kaiser/core/types"
+	"log"
 	"strings"
 	"time"
 )
@@ -156,4 +158,69 @@ func (r *PostgresRepository) FindTaskByNameAndVersion(ctx context.Context, name 
 		return nil, err
 	}
 	return task, nil
+}
+
+func (r *PostgresRepository) InsertJobArgument(ctx context.Context, job *types.Job, argument types.JobArgs) error {
+	if job == nil {
+		return errors.New("Job instance cannot be null")
+	}
+	_, err := r.db.Exec(`INSERT INTO arguments(name, value, job_name, job_version )
+								VALUES($1, $2, $3, $4)`,
+		argument.Name, argument.Value, job.Name, job.Version)
+	return err
+}
+
+func (r *PostgresRepository) InsertJob(ctx context.Context, job types.Job) error {
+	var duration *string
+	if job.Activation.Duration != "" {
+		duration = &job.Activation.Duration
+	}
+
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = tx.Exec(`INSERT INTO jobs(name, version, created_at, activation_type, duration)
+								VALUES($1, $2, $3, $4, $5)`,
+		job.Name, job.Version, time.Now(), job.Activation.Type, duration)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Insert tasks relations
+	for _, jobtask := range job.Tasks {
+		task, err := r.FindTaskByNameAndVersion(ctx, jobtask.Name, jobtask.Version)
+		if err != nil {
+			tx.Rollback()
+			return errors.Wrap(err, fmt.Sprintf("Job creation failed beacuse of a wrong task asignment. TASK [%s, %s]", task.Name, task.Version))
+		}
+		err = r.insertJobTaskRelation(tx, &job, task)
+		if err != nil {
+			tx.Rollback()
+			return errors.Wrap(err,
+				fmt.Sprintf("Job creation failed beacuse job-task relation could not be created. JOB [%s, %s] TASK [%s, %s]",
+					job.Name, job.Version, task.Name, task.Version))
+		}
+	}
+
+	//Insert arguments
+	for _, jobArg := range job.Parameters {
+		// if someone fails the argument is not added but the job insertion does not fail
+		err := r.InsertJobArgument(ctx, &job, jobArg)
+		if err != nil {
+			log.Println("Error creating argument", err)
+		}
+	}
+
+	tx.Commit()
+	return nil
+}
+
+func (r *PostgresRepository) insertJobTaskRelation(tx *sql.Tx, job *types.Job, task *types.JobTask) error {
+	_, err := tx.Exec(`INSERT INTO jobs_tasks(job_name, job_version, task_name, task_version)
+								VALUES($1, $2, $3, $4)`,
+		job.Name, job.Version, task.Name, task.Version)
+	return err
 }

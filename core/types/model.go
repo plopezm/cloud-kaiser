@@ -16,15 +16,14 @@ const (
 
 // Job Represents executable job
 type Job struct {
-	Version    string              `json:"version"`
 	Name       string              `json:"name"`
+	Version    string              `json:"version"`
 	CreatedAt  time.Time           `json:"created_at"`
 	Parameters []JobArgs           `json:"params"`
 	Activation JobActivation       `json:"activation"`
 	Entrypoint string              `json:"entrypoint"`
 	Tasks      map[string]*JobTask `json:"tasks"`
 	Status     JobStatus           `json:"status"`
-	Hash       []byte              `json:"hash"`
 }
 
 // JobActivation Represents an activation type

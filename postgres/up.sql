@@ -4,10 +4,10 @@ CREATE TABLE tasks (
   version                 VARCHAR NOT NULL,
   created_at              TIMESTAMP WITH TIME ZONE NOT NULL,
   script                  VARCHAR NOT NULL,
-  on_success_name    VARCHAR,
-  on_success_version VARCHAR,
-  on_failure_name    VARCHAR,
-  on_failure_version VARCHAR,
+  on_success_name         VARCHAR,
+  on_success_version      VARCHAR,
+  on_failure_name         VARCHAR,
+  on_failure_version      VARCHAR,
 
   PRIMARY KEY (name, version),
   FOREIGN KEY (on_success_name, on_success_version) REFERENCES tasks(name, version),
@@ -21,8 +21,6 @@ CREATE TABLE jobs (
   created_at      TIMESTAMP WITH TIME ZONE NOT NULL,
   activation_type VARCHAR NOT NULL,
   duration        VARCHAR,
-  status          SMALLINT NOT NULL,
-  hash            VARCHAR,
   PRIMARY KEY(name, version)
 );
 
@@ -33,7 +31,7 @@ CREATE TABLE arguments (
   job_name        VARCHAR NOT NULL,
   job_version     VARCHAR NOT NULL,
   value           VARCHAR,
-  PRIMARY KEY (name),
+  PRIMARY KEY (name, job_name, job_version),
   FOREIGN KEY (job_name, job_version) REFERENCES jobs(name, version)
 );
 
