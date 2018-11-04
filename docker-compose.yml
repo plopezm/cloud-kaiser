@@ -17,7 +17,7 @@ services:
     image: "docker.elastic.co/elasticsearch/elasticsearch:6.2.3"
   task-service:
     build: "."
-    command: "task-service"
+    command: "repository-service"
     depends_on:
     - "postgres"
     - "nats"
@@ -48,5 +48,5 @@ services:
     ports:
     - "8080:80"
     depends_on:
-    - "task-service"
+    - "repository-service"
     - "query-service"
