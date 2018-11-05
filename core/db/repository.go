@@ -18,8 +18,14 @@ type Repository interface {
 
 	InsertJobArgument(ctx context.Context, job *types.Job, argument types.JobArgs) error
 
+	// InsertJob Creates a new job
 	InsertJob(ctx context.Context, job types.Job) error
+	// ListJobs Returns a paginated list of jobs
 	ListJobs(ctx context.Context, offset uint64, limit uint64) ([]types.Job, error)
+	// FindJobByName Returns all versions of a job by name
+	FindJobByName(ctx context.Context, name string) ([]types.Job, error)
+	// FindJobByNameAndVersion Returns a version of a job
+	FindJobByNameAndVersion(ctx context.Context, name string, version string) (*types.Job, error)
 }
 
 var impl Repository
@@ -58,4 +64,12 @@ func InsertJob(ctx context.Context, job types.Job) error {
 
 func ListJobs(ctx context.Context, page uint64, limit uint64) ([]types.Job, error) {
 	return impl.ListJobs(ctx, page, limit)
+}
+
+func FindJobByName(ctx context.Context, name string) ([]types.Job, error) {
+	return impl.FindJobByName(ctx, name)
+}
+
+func FindJobByNameAndVersion(ctx context.Context, name string, version string) (*types.Job, error) {
+	return impl.FindJobByNameAndVersion(ctx, name, version)
 }

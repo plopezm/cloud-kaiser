@@ -251,6 +251,10 @@ func (r *PostgresRepository) ListJobs(ctx context.Context, offset uint64, limit 
 			if duration.Valid {
 				job.Activation.Duration = duration.String
 			}
+			job.Tasks, err = r.findJobTasks(&job)
+			if err != nil {
+				log.Printf("Error fetching job tasks. JOB [%s, %s]\n", job.Name, job.Version)
+			}
 			jobs = append(jobs, job)
 		} else {
 			return nil, err
@@ -258,4 +262,98 @@ func (r *PostgresRepository) ListJobs(ctx context.Context, offset uint64, limit 
 	}
 
 	return jobs, nil
+}
+
+func (r *PostgresRepository) FindJobByName(ctx context.Context, name string) ([]types.Job, error) {
+	rows, err := r.db.Query(
+		`SELECT name, version, created_at, activation_type, duration 
+				FROM jobs WHERE name = $1 ORDER BY name DESC, version DESC`, name)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	jobs := []types.Job{}
+	for rows.Next() {
+		var job types.Job
+		var duration sql.NullString
+		if err = rows.Scan(&job.Name, &job.Version, &job.CreatedAt, &job.Activation.Type, &duration); err == nil {
+			if duration.Valid {
+				job.Activation.Duration = duration.String
+			}
+			job.Tasks, err = r.findJobTasks(&job)
+			if err != nil {
+				log.Printf("Error fetching job tasks. JOB [%s, %s]\n", job.Name, job.Version)
+			}
+			jobs = append(jobs, job)
+		} else {
+			return nil, err
+		}
+	}
+
+	return jobs, nil
+}
+
+func (r *PostgresRepository) FindJobByNameAndVersion(ctx context.Context, name string, version string) (*types.Job, error) {
+	rows, err := r.db.Query(
+		`SELECT name, version, created_at, activation_type, duration 
+				FROM jobs WHERE name = $1 AND version = $2`, name, version)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var job = new(types.Job)
+	if rows.Next() {
+		var duration sql.NullString
+		if err = rows.Scan(&job.Name, &job.Version, &job.CreatedAt, &job.Activation.Type, &duration); err == nil {
+			if duration.Valid {
+				job.Activation.Duration = duration.String
+			}
+			job.Tasks, err = r.findJobTasks(job)
+			if err != nil {
+				log.Printf("Error fetching job tasks. JOB [%s, %s]\n", job.Name, job.Version)
+			}
+		} else {
+			return nil, err
+		}
+	}
+
+	return job, nil
+}
+
+func (r *PostgresRepository) findJobTasks(job *types.Job) (map[string]types.JobTask, error) {
+	rows, err := r.db.Query(
+		`SELECT t.name, t.version, t.created_at, t.script, t.on_success_name, t.on_success_version, t.on_failure_name, t.on_failure_version 
+				FROM tasks t, jobs_tasks jt WHERE t.name = jt.task_name AND t.version = jt.job_version
+				AND jt.job_name = $1 AND jt.job_version = $2 ORDER BY name DESC, version DESC`, job.Name, job.Version)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	tasks := make(map[string]types.JobTask)
+	for rows.Next() {
+		task := types.JobTask{}
+		task.Script = new(string)
+		var onSuccessName sql.NullString
+		var onSuccessVersion sql.NullString
+		var onFailureName sql.NullString
+		var onFailureVersion sql.NullString
+		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, task.Script, &onSuccessName, &onSuccessVersion, &onFailureName, &onFailureVersion); err == nil {
+			if onSuccessName.Valid && onSuccessVersion.Valid {
+				task.OnSuccess = fmt.Sprintf("%s:%s", onSuccessName.String, onSuccessVersion.String)
+			}
+			if onFailureName.Valid && onFailureVersion.Valid {
+				task.OnFailure = fmt.Sprintf("%s:%s", onFailureName.String, onFailureVersion.String)
+			}
+			tasks[task.Name] = task
+		} else {
+			return nil, err
+		}
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return tasks, nil
 }
