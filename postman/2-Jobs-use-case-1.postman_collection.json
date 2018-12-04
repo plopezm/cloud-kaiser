@@ -68,7 +68,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"HelloWorldJob\",\n    \"version\": \"1.0\",\n    \"activation\": {\n        \"type\": \"remote\"\n    },\n    \"entrypoint\": \"PrintHelloWorld\",\n    \"tasks\": {\n        \"PrintHelloWorld\": {\n        \t\"version\": \"1.0\",\n            \"onSuccess\": \"SuccessLogTask\",\n            \"onFailure\": \"FailureLogTask\"\n        },\n        \"SuccessLogTask\": {\n        \t\"version\": \"1.0\"\n        },\n        \"FailureLogTask\": {\n        \t\"version\": \"1.0\"\n        }\n    }\n}"
+					"raw": "{\n    \"name\": \"HelloWorldJob\",\n    \"version\": \"1.0\",\n    \"activation\": {\n        \"type\": \"remote\"\n    },\n    \"entrypoint\": \"PrintHelloWorld\",\n    \"tasks\": {\n        \"SuccessLogTask\": {\n        \t\"version\": \"1.0\"\n        },\n        \"FailureLogTask\": {\n        \t\"version\": \"1.0\"\n        },\n        \"PrintHelloWorld\": {\n        \t\"version\": \"1.0\",\n            \"onSuccess\": \"SuccessLogTask:1.0\",\n            \"onFailure\": \"FailureLogTask:1.0\"\n        }\n    }\n}"
 				},
 				"url": {
 					"raw": "localhost:8080/v1/jobs",

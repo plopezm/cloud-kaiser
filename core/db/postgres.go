@@ -148,8 +148,7 @@ func (r *PostgresRepository) InsertJob(ctx context.Context, job *types.Job) erro
 	}
 
 	// Insert tasks relations
-	for taskName, _ := range job.Tasks {
-		jobtask := job.Tasks[taskName]
+	for taskName, jobtask := range job.Tasks {
 		task, err := r.FindTaskByNameAndVersion(ctx, taskName, jobtask.Version)
 		if task == nil {
 			tx.Rollback()
@@ -168,6 +167,7 @@ func (r *PostgresRepository) InsertJob(ctx context.Context, job *types.Job) erro
 				fmt.Sprintf("Job creation failed beacuse job-task relation could not be created. JOB [%s, %s] TASK [%s, %s]",
 					job.Name, job.Version, task.Name, task.Version))
 		}
+		job.Tasks[taskName] = jobtask
 	}
 
 	contextWithTx := context.WithValue(ctx, "tx", tx)

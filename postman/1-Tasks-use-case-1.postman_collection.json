@@ -120,9 +120,7 @@
 							"",
 							"pm.test(\"response contains an array of created tasks\", function () {",
 							"    pm.expect(jsonData).not.to.be.undefined;",
-							"    pm.expect(jsonData.length).to.equal(2);",
-							"    pm.expect(jsonData[0].name).to.equal(\"SuccessLogTask\");",
-							"    pm.expect(jsonData[1].name).to.equal(\"FailureLogTask\");",
+							"    pm.expect(jsonData.length).not.to.equal(0);",
 							"})"
 						],
 						"type": "text/javascript"
