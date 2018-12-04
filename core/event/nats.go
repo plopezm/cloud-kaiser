@@ -29,16 +29,16 @@ func (eventStore *NatsEventStore) Close() {
 	}
 }
 
-func (eventStore *NatsEventStore) PublishTaskCreated(task types.JobTask) error {
+func (eventStore *NatsEventStore) PublishTaskCreated(task types.Task) error {
 	return eventStore.publishMessage(Envelope{
 		Destination: TaskCreated,
 		Content:     task,
 	})
 }
 
-func (eventStore *NatsEventStore) OnTaskCreated(from MessageAddress, f func(task types.JobTask)) error {
+func (eventStore *NatsEventStore) OnTaskCreated(from MessageAddress, f func(task types.Task)) error {
 	var err error
-	content := types.JobTask{}
+	content := types.Task{}
 	eventStore.taskCreatedSubscription, err = eventStore.nc.Subscribe(string(from), func(msg *nats.Msg) {
 		eventStore.readMessage(msg.Data, &content)
 		f(content)

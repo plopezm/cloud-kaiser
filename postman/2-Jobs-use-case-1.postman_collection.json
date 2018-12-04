@@ -1,0 +1,111 @@
+{
+	"info": {
+		"_postman_id": "818bfb13-ebdf-48a5-b303-1d26af3ace93",
+		"name": "Jobs use case 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Creating on success task logger Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7fdc9b9a-ecb8-4004-b6d2-37e9189b2dd3",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"PrintHelloWorld\",\n\t\"version\": \"1.0\",\n    \"script\": \"logger.info('Hello World')\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/tasks",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create job using non-existing tasks",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"HelloWorldJob\",\n    \"version\": \"1.0\",\n    \"activation\": {\n        \"type\": \"remote\"\n    },\n    \"entrypoint\": \"PrintHelloWorld\",\n    \"tasks\": {\n        \"SuccessLogTask\": {\n        \t\"version\": \"1.0\"\n        },\n        \"FailureLogTask\": {\n        \t\"version\": \"1.0\"\n        },\n        \"PrintHelloWorld\": {\n        \t\"version\": \"1.0\",\n            \"onSuccess\": \"SuccessLogTask:1.0\",\n            \"onFailure\": \"FailureLogTask:1.0\"\n        }\n    }\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/jobs",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"jobs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check job created",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/v1/jobs",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"jobs"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

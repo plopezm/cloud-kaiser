@@ -16,15 +16,14 @@ const (
 
 // Job Represents executable job
 type Job struct {
-	Version    string              `json:"version"`
-	Name       string              `json:"name"`
-	CreatedAt  time.Time           `json:"created_at"`
-	Parameters []JobArgs           `json:"params"`
-	Activation JobActivation       `json:"activation"`
-	Entrypoint string              `json:"entrypoint"`
-	Tasks      map[string]*JobTask `json:"tasks"`
-	Status     JobStatus           `json:"status"`
-	Hash       []byte              `json:"hash"`
+	Name       string             `json:"name"`
+	Version    string             `json:"version"`
+	CreatedAt  time.Time          `json:"created_at"`
+	Parameters []JobArgs          `json:"params"`
+	Activation JobActivation      `json:"activation"`
+	Entrypoint string             `json:"entrypoint"`
+	Tasks      map[string]JobTask `json:"tasks"`
+	Status     JobStatus          `json:"status"`
 }
 
 // JobActivation Represents an activation type
@@ -52,10 +51,7 @@ type JobArgs struct {
 
 // JobTask Represents a job task to be performed
 type JobTask struct {
-	Name      string    `json:"name"`
-	Version   string    `json:"version"`
-	CreatedAt time.Time `json:"createdAt"`
-	Script    *string   `json:"script"`
+	Task
 	OnSuccess string    `json:"onSuccess"`
 	OnFailure string    `json:"onFailure"`
 }
