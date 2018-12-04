@@ -1,0 +1,308 @@
+{
+	"info": {
+		"_postman_id": "e2bd5b5c-4199-4b74-b7f6-23e95976e841",
+		"name": "Tasks use case 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Creating on success task logger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7fdc9b9a-ecb8-4004-b6d2-37e9189b2dd3",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"SuccessLogTask\",\n\t\"version\": \"1.0\",\n    \"script\": \"logger.info('success')\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/tasks",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Creating on failure task logger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "02b8d32b-fd6a-45ce-b90b-02d26cc068f1",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"FailureLogTask\",\n\t\"version\": \"1.0\",\n    \"script\": \"logger.info('failure')\"\n}"
+				},
+				"url": {
+					"raw": "localhost:8080/v1/tasks",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Getting all created tasks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ee33b389-32c5-447b-89fd-b688b497138f",
+						"exec": [
+							"// example using pm.response.to.have",
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"response contains an array of created tasks\", function () {",
+							"    pm.expect(jsonData).not.to.be.undefined;",
+							"    pm.expect(jsonData.length).to.equal(2);",
+							"    pm.expect(jsonData[0].name).to.equal(\"SuccessLogTask\");",
+							"    pm.expect(jsonData[1].name).to.equal(\"FailureLogTask\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/v1/tasks",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search by name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "62d6b928-a95c-429d-927c-5c3d3eabb6ac",
+						"exec": [
+							"// example using pm.response.to.have",
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"response contains an array of created tasks\", function () {",
+							"    pm.expect(jsonData).not.to.be.undefined;",
+							"    pm.expect(jsonData.length).to.equal(1);",
+							"    pm.expect(jsonData[0].name).to.equal(\"FailureLogTask\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/v1/tasks/FailureLogTask",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"tasks",
+						"FailureLogTask"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search by name and version",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0da8b120-2d45-4500-959d-d2cd6a91c08b",
+						"exec": [
+							"// example using pm.response.to.have",
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"response contains an array of created tasks\", function () {",
+							"    pm.expect(jsonData).not.to.be.undefined;",
+							"    pm.expect(jsonData.name).to.equal(\"FailureLogTask\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/v1/tasks/FailureLogTask/version/1.0",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"tasks",
+						"FailureLogTask",
+						"version",
+						"1.0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Searching using elastic search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0d8ce467-00eb-4a4f-b61a-3beaee53499d",
+						"exec": [
+							"// example using pm.response.to.have",
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"response contains an array of created tasks\", function () {",
+							"    pm.expect(jsonData).not.to.be.undefined;",
+							"    pm.expect(jsonData.length).to.equal(1);",
+							"    pm.expect(jsonData[0].name).to.equal(\"SuccessLogTask\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/v1/search/tasks?query=successlogtask",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"search",
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "successlogtask"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

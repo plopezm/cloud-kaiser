@@ -26,7 +26,7 @@ func NewElasticSearch(url string) (*ElasticSearchRepository, error) {
 func (r *ElasticSearchRepository) Close() {
 }
 
-func (r *ElasticSearchRepository) InsertTask(ctx context.Context, task types.JobTask) error {
+func (r *ElasticSearchRepository) InsertTask(ctx context.Context, task types.Task) error {
 	_, err := r.client.Index().
 		Index("tasks").
 		Type("JobTask").
@@ -37,7 +37,7 @@ func (r *ElasticSearchRepository) InsertTask(ctx context.Context, task types.Job
 	return err
 }
 
-func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, offset uint64, limit uint64) ([]types.JobTask, error) {
+func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, offset uint64, limit uint64) ([]types.Task, error) {
 	result, err := r.client.Search().
 		Index("tasks").
 		Query(
@@ -52,9 +52,9 @@ func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, o
 	if err != nil {
 		return nil, err
 	}
-	tasks := []types.JobTask{}
+	tasks := []types.Task{}
 	for _, hit := range result.Hits.Hits {
-		var task types.JobTask
+		var task types.Task
 		if err = json.Unmarshal(*hit.Source, &task); err != nil {
 			log.Println(err)
 		}
