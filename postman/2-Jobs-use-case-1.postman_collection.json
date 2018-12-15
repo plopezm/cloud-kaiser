@@ -56,6 +56,20 @@
 		},
 		{
 			"name": "Create job using non-existing tasks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c202301f-f599-4129-b8f1-c32bcd3c46cf",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [
@@ -86,6 +100,26 @@
 		},
 		{
 			"name": "Check job created",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d1df53e2-84bd-4c2b-b8f6-31c5d6d30d40",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"response contains a job\", function() {",
+							"    pm.expect(jsonData.length).not.to.eql(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],

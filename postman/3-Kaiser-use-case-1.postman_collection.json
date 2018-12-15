@@ -1,0 +1,47 @@
+{
+	"info": {
+		"_postman_id": "1a95e05a-7150-467c-b45d-ca154abda5c3",
+		"name": "Kaiser use case 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Health status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e40e5653-9a72-4c47-a154-28858c936f63",
+						"exec": [
+							"pm.test(\"response is ok\", function () {",
+							"    pm.expect(pm.response.code).to.eql(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8080/kaiser/v1/health",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"kaiser",
+						"v1",
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

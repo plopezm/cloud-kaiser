@@ -43,6 +43,19 @@ services:
       POSTGRES_PASSWORD: "postgres"
       NATS_ADDRESS: "nats:4222"
       ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
+  kaiser-service:
+    build: "."
+    command: "kaiser-service"
+    depends_on:
+      - "postgres"
+      - "nats"
+    ports:
+      - "8080"
+    environment:
+      POSTGRES_DB: "kaiserdb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      NATS_ADDRESS: "nats:4222"
   nginx:
     build: "./nginx"
     ports:
