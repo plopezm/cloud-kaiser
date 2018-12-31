@@ -13,5 +13,6 @@ type Runnable interface {
 	GetStartTime() int64
 	GetStatus() RunnableStatus
 	SetStatus(status RunnableStatus)
+	SetParameters(map[string]interface{})
 	Run()
 }

@@ -43,7 +43,7 @@ func (plugin *OSPlugin) Call(jobName string, version string, params map[string]i
 		res, _ := otto.ToValue(err.Error())
 		return res
 	}
-	runnable := types.CreateRunnable(*job)
-	engine.Execute(runnable)
+	runnable := engine.CreateRunnable(*job)
+	engine.Execute(runnable, params)
 	return otto.Value{}
 }

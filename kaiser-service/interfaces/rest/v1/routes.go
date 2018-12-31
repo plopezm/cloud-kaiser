@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/plopezm/cloud-kaiser/core/db"
@@ -32,7 +33,15 @@ func executeJob(w http.ResponseWriter, r *http.Request) {
 		util.ResponseError(w, http.StatusNotFound, fmt.Sprintf("Job %s:%s not found", vars["name"], vars["version"]))
 		return
 	}
-	engine.Execute(engine.CreateRunnable(*job))
+	parameters := make(map[string]interface{})
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(parameters)
+	if err != nil {
+		util.ResponseError(w, http.StatusBadRequest, "Error decoding parameters")
+		return
+	}
+
+	engine.Execute(engine.CreateRunnable(*job), parameters)
 
 	util.ResponseOk(w, map[string]interface{}{
 		"status": "OK",

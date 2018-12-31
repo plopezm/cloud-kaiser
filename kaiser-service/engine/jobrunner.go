@@ -56,3 +56,14 @@ func (r *JobRunner) Run() {
 	}
 	r.SetStatus(RunnableStatusStopped)
 }
+
+func (r *JobRunner) SetParameters(receivedParameters map[string]interface{}) {
+	allParams := make([]types.JobArgs, 0)
+	for _, parameter := range r.Parameters {
+		if value, ok := receivedParameters[parameter.Name]; ok {
+			parameter.Value = value
+		}
+		allParams = append(allParams, parameter)
+	}
+	r.Parameters = allParams
+}

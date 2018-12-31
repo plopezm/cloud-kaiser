@@ -18,7 +18,7 @@ func Start() {
 	}
 }
 
-func Execute(runnable Runnable) {
+func Execute(runnable Runnable, parameters map[string]interface{}) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	thread := func() {
@@ -27,6 +27,7 @@ func Execute(runnable Runnable) {
 	}
 	runnable.SetStartTime(time.Now().UnixNano())
 	runnable.SetStatus(RunnableStatusRunning)
+	runnable.SetParameters(parameters)
 	executions[fmt.Sprintf("%s-%d", runnable.GetIdentifier(), runnable.GetStartTime())] = runnable
 	go thread()
 }
