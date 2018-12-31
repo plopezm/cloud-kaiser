@@ -41,12 +41,13 @@
 					"raw": "{\n\t\"name\": \"PrintHelloWorld\",\n\t\"version\": \"1.0\",\n    \"script\": \"logger.info('Hello World')\"\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/v1/tasks",
+					"raw": "localhost:8000/repository/v1/tasks",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
+						"repository",
 						"v1",
 						"tasks"
 					]
@@ -85,12 +86,13 @@
 					"raw": "{\n    \"name\": \"HelloWorldJob\",\n    \"version\": \"1.0\",\n    \"activation\": {\n        \"type\": \"remote\"\n    },\n    \"entrypoint\": \"PrintHelloWorld\",\n    \"tasks\": {\n        \"SuccessLogTask\": {\n        \t\"version\": \"1.0\"\n        },\n        \"FailureLogTask\": {\n        \t\"version\": \"1.0\"\n        },\n        \"PrintHelloWorld\": {\n        \t\"version\": \"1.0\",\n            \"onSuccess\": \"SuccessLogTask:1.0\",\n            \"onFailure\": \"FailureLogTask:1.0\"\n        }\n    }\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/v1/jobs",
+					"raw": "localhost:8000/repository/v1/jobs",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
+						"repository",
 						"v1",
 						"jobs"
 					]
@@ -128,12 +130,13 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:8080/v1/jobs",
+					"raw": "localhost:8000/query/v1/jobs",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
+						"query",
 						"v1",
 						"jobs"
 					]

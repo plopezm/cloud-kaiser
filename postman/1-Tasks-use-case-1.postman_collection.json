@@ -41,12 +41,13 @@
 					"raw": "{\n\t\"name\": \"SuccessLogTask\",\n\t\"version\": \"1.0\",\n    \"script\": \"logger.info('success')\"\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/v1/tasks",
+					"raw": "localhost:8000/repository/v1/tasks",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
+						"repository",
 						"v1",
 						"tasks"
 					]
@@ -90,12 +91,13 @@
 					"raw": "{\n\t\"name\": \"FailureLogTask\",\n\t\"version\": \"1.0\",\n    \"script\": \"logger.info('failure')\"\n}"
 				},
 				"url": {
-					"raw": "localhost:8080/v1/tasks",
+					"raw": "localhost:8000/repository/v1/tasks",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
+						"repository",
 						"v1",
 						"tasks"
 					]
@@ -141,12 +143,13 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:8080/v1/tasks",
+					"raw": "localhost:8000/query/v1/tasks",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
+						"query",
 						"v1",
 						"tasks"
 					]
@@ -187,12 +190,13 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:8080/v1/tasks/FailureLogTask",
+					"raw": "localhost:8000/query/v1/tasks/FailureLogTask",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
+						"query",
 						"v1",
 						"tasks",
 						"FailureLogTask"
@@ -233,12 +237,13 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:8080/v1/tasks/FailureLogTask/version/1.0",
+					"raw": "localhost:8000/query/v1/tasks/FailureLogTask/version/1.0",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
+						"query",
 						"v1",
 						"tasks",
 						"FailureLogTask",
@@ -282,12 +287,13 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:8080/v1/search/tasks?query=successlogtask",
+					"raw": "localhost:8000/query/v1/search/tasks?query=successlogtask",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
+						"query",
 						"v1",
 						"search",
 						"tasks"

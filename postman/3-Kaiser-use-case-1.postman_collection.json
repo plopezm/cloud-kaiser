@@ -29,13 +29,12 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "localhost:8080/kaiser/v1/health",
+					"raw": "localhost:8000/v1/health",
 					"host": [
 						"localhost"
 					],
-					"port": "8080",
+					"port": "8000",
 					"path": [
-						"kaiser",
 						"v1",
 						"health"
 					]

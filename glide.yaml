@@ -14,3 +14,4 @@ import:
   version: v1.4.0
 - package: github.com/lib/pq
   version: v1.0.0
+- package: github.com/robertkrimen/otto

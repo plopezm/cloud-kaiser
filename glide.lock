@@ -1,5 +1,5 @@
-hash: 55592b5320c67ddf23d0052a604ecedc1eeb3bea6647b0eef7ba9d7e91e6b7c2
-updated: 2018-11-02T16:45:39.976134+01:00
+hash: e7811105f6743737cda569601a9737c71141800abecb30b32e6054a62a67f854
+updated: 2018-12-31T13:54:35.665957+01:00
 imports:
 - name: github.com/gorilla/context
   version: 51ce91d2eaddeca0ef29a71d766bb3634dadf729
@@ -11,6 +11,8 @@ imports:
   version: f611eb38b3875cc3bd991ca91c51d06446afa14c
 - name: github.com/lib/pq
   version: 4ded0e9383f75c197b3a2aaa6d590ac52df6fd79
+  subpackages:
+  - oid
 - name: github.com/mailru/easyjson
   version: 60711f1a8329503b04e1c88535f419d0bb440bff
   subpackages:
@@ -31,6 +33,23 @@ imports:
   - uritemplates
 - name: github.com/pkg/errors
   version: 059132a15dd08d6704c67711dae0cf35ab991756
+- name: github.com/robertkrimen/otto
+  version: 15f95af6e78dcd2030d8195a138bd88d4f403546
+  subpackages:
+  - ast
+  - dbg
+  - file
+  - parser
+  - registry
+  - token
 - name: github.com/tinrab/retry
   version: e979fd9b1d7980d567dd50fc993d06f1fb17eac3
+- name: golang.org/x/net
+  version: 927f97764cc334a6575f4b7a1584a147864d5723
+  subpackages:
+  - context
+- name: gopkg.in/sourcemap.v1
+  version: 6e83acea0053641eff084973fee085f0c193c61a
+  subpackages:
+  - base64vlq
 testImports: []

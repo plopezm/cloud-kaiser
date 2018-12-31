@@ -1,3 +1,9 @@
+--DROP SCHEMA IF EXISTS KAISER;
+--CREATE SCHEMA KAISER;
+
+-- To change search_path on a connection-level
+--SET search_path TO KAISER;
+
 DROP TABLE IF EXISTS tasks;
 CREATE TABLE tasks (
   name                    VARCHAR NOT NULL,

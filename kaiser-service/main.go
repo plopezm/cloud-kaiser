@@ -7,6 +7,7 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/logger"
+	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/interfaces"
 	"github.com/tinrab/retry"
 	"time"
@@ -17,8 +18,8 @@ type Config struct {
 	PostgresUser     string `envconfig:"POSTGRES_USER"`
 	PostgresPassword string `envconfig:"POSTGRES_PASSWORD"`
 	NatsAddress      string `envconfig:"NATS_ADDRESS"`
-	LogLevel		 string	`envconfig:"LOG_LEVEL"`
-	ServicePort		 int    `envconfig:"SERVICE_PORT"`
+	LogLevel         string `envconfig:"LOG_LEVEL"`
+	ServicePort      int    `envconfig:"SERVICE_PORT"`
 }
 
 func main() {
@@ -61,6 +62,8 @@ func main() {
 	if servicePort == 0 {
 		servicePort = 8080
 	}
+	log.Debug("Starting engine")
+	go engine.Start()
 	log.Debug(fmt.Sprintf("Starting server at port %d", servicePort))
 	interfaces.StartServer(servicePort)
 }

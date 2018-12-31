@@ -3,15 +3,13 @@ package types
 import "time"
 
 // JobStatus of the current process
-type JobStatus int32
+type JobStatus string
 
 const (
 	// STOPPED The process is stopped
-	STOPPED JobStatus = 0
+	RunnableStatusStopped = "STOPPED"
 	// RUNNING The process is currently running
-	RUNNING JobStatus = 1
-	// PAUSED The process is currently paused
-	PAUSED JobStatus = 2
+	RunnableStatusRunning = "RUNNING"
 )
 
 // Job Represents executable job
@@ -52,6 +50,6 @@ type JobArgs struct {
 // JobTask Represents a job task to be performed
 type JobTask struct {
 	Task
-	OnSuccess string    `json:"onSuccess"`
-	OnFailure string    `json:"onFailure"`
+	OnSuccess string `json:"onSuccess"`
+	OnFailure string `json:"onFailure"`
 }

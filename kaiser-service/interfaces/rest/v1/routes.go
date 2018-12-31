@@ -7,13 +7,13 @@ import (
 	"net/http"
 )
 
-func AddRoutes(router *mux.Router) (*mux.Router) {
+func AddRoutes(router *mux.Router) *mux.Router {
 	router.HandleFunc("/health", healthStatusHandler).Methods("STATUS", "GET")
 	return router
 }
 
 func healthStatusHandler(w http.ResponseWriter, r *http.Request) {
-	logger.GetLogger().Debug("Called healthStatusHandler",)
+	logger.GetLogger().Debug("Called healthStatusHandler")
 	util.ResponseOk(w, map[string]interface{}{
 		"status": "UP",
 	})

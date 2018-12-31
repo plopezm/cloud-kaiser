@@ -11,7 +11,7 @@ func GetRouter() *mux.Router {
 	logger.GetLogger().Info("Setting REST routes:")
 
 	// Adding routes to the subrouter version 1
-	v1Router := router.PathPrefix("/kaiser/v1").Subrouter()
+	v1Router := router.PathPrefix("/v1").Subrouter()
 	v1.AddRoutes(v1Router)
 	printRoutes(v1Router)
 

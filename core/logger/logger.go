@@ -63,7 +63,7 @@ func InitializeLogger(defaultLogLevel string) {
 }
 
 // GetLogger - Returns the singleton logger with the level set from config file
-func GetLogger() (*Logger) {
+func GetLogger() *Logger {
 	if logger == nil {
 		panic("Logger not initalized, please use InitializeLogger first")
 	}
