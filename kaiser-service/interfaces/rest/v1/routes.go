@@ -13,7 +13,7 @@ import (
 
 func AddRoutes(router *mux.Router) *mux.Router {
 	router.HandleFunc("/health", healthStatusHandler).Methods("STATUS", "GET")
-	router.HandleFunc("/job/{name}/{version}", executeJob).Methods("POST")
+	router.HandleFunc("/jobs/{name}/{version}", executeJob).Methods("POST")
 	return router
 }
 
@@ -34,10 +34,9 @@ func executeJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	parameters := make(map[string]interface{})
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(parameters)
+	err = json.NewDecoder(r.Body).Decode(&parameters)
 	if err != nil {
-		util.ResponseError(w, http.StatusBadRequest, "Error decoding parameters")
+		util.ResponseError(w, http.StatusBadRequest, fmt.Sprintf("Error decoding parameters: %s", err.Error()))
 		return
 	}
 

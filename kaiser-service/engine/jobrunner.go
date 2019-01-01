@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"github.com/plopezm/cloud-kaiser/core/logger"
 	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/contextvars"
 	"golang.org/x/net/context"
@@ -46,8 +47,10 @@ func (r *JobRunner) Run() {
 	vm := NewVM(runnerContext)
 	r.SetStatus(RunnableStatusRunning)
 	task, found := r.Tasks[r.Entrypoint]
+	logger.GetLogger().Debug(fmt.Sprintf("Job %s:%s, entrypoint %s started", r.Name, r.Version, task.Name))
 	for found {
 		_, err := vm.Run(task.Script)
+		logger.GetLogger().Debug(fmt.Sprintf("Task %s executed", task.Name))
 		if err == nil {
 			task, found = r.Tasks[task.OnSuccess]
 		} else {

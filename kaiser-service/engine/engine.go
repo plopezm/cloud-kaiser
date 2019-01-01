@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"github.com/plopezm/cloud-kaiser/core/logger"
 	"sync"
 	"time"
 )
@@ -15,6 +16,7 @@ func Start() {
 		mutex.Lock()
 		delete(executions, fmt.Sprintf("%s-%d", runnable.GetIdentifier(), runnable.GetStartTime()))
 		mutex.Unlock()
+		logger.GetLogger().Debug(fmt.Sprintf("Execution of process %s-%d finished", runnable.GetIdentifier(), runnable.GetStartTime()))
 	}
 }
 
@@ -30,6 +32,7 @@ func Execute(runnable Runnable, parameters map[string]interface{}) {
 	runnable.SetParameters(parameters)
 	executions[fmt.Sprintf("%s-%d", runnable.GetIdentifier(), runnable.GetStartTime())] = runnable
 	go thread()
+	logger.GetLogger().Debug(fmt.Sprintf("Execution of process %s-%d started", runnable.GetIdentifier(), runnable.GetStartTime()))
 }
 
 func GetExecutions() []Runnable {
