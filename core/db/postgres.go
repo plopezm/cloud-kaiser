@@ -204,10 +204,14 @@ func (r *PostgresRepository) insertJobTaskRelation(tx *sql.Tx, job *types.Job, t
 			onFailureVersion = &taskIdentifiers[1]
 		}
 	}
+	var isEntryPoint = 0
+	if job.Entrypoint == task.Name {
+		isEntryPoint = 1
+	}
 
-	_, err := tx.Exec(`INSERT INTO jobs_tasks(job_name, job_version, task_name, task_version, on_success_name, on_success_version, on_failure_name, on_failure_version)
-								VALUES($1, $2, $3, $4, $5, $6, $7, $8)`,
-		job.Name, job.Version, task.Name, task.Version, onSuccessName, onSuccessVersion, onFailureName, onFailureVersion)
+	_, err := tx.Exec(`INSERT INTO jobs_tasks(job_name, job_version, task_name, task_version, on_success_name, on_success_version, on_failure_name, on_failure_version, entrypoint)
+								VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+		job.Name, job.Version, task.Name, task.Version, onSuccessName, onSuccessVersion, onFailureName, onFailureVersion, isEntryPoint)
 	return err
 }
 
@@ -301,7 +305,7 @@ func (r *PostgresRepository) FindJobByNameAndVersion(ctx context.Context, name s
 
 func (r *PostgresRepository) findJobTasks(job *types.Job) (map[string]types.JobTask, error) {
 	rows, err := r.db.Query(
-		`SELECT t.name, t.version, t.created_at, t.script, jt.on_success_name, jt.on_success_version, jt.on_failure_name, jt.on_failure_version 
+		`SELECT t.name, t.version, t.created_at, t.script, jt.on_success_name, jt.on_success_version, jt.on_failure_name, jt.on_failure_version, jt.entrypoint 
 				FROM tasks t, jobs_tasks jt WHERE t.name = jt.task_name AND t.version = jt.job_version
 				AND jt.job_name = $1 AND jt.job_version = $2 ORDER BY name DESC, version DESC`, job.Name, job.Version)
 	if err != nil {
@@ -317,7 +321,8 @@ func (r *PostgresRepository) findJobTasks(job *types.Job) (map[string]types.JobT
 		var onSuccessVersion sql.NullString
 		var onFailureName sql.NullString
 		var onFailureVersion sql.NullString
-		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, task.Script, &onSuccessName, &onSuccessVersion, &onFailureName, &onFailureVersion); err == nil {
+		var isEntryPoint int8
+		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, task.Script, &onSuccessName, &onSuccessVersion, &onFailureName, &onFailureVersion, &isEntryPoint); err == nil {
 			if onSuccessName.Valid && onSuccessVersion.Valid {
 				task.OnSuccess = fmt.Sprintf("%s:%s", onSuccessName.String, onSuccessVersion.String)
 			}
@@ -325,6 +330,9 @@ func (r *PostgresRepository) findJobTasks(job *types.Job) (map[string]types.JobT
 				task.OnFailure = fmt.Sprintf("%s:%s", onFailureName.String, onFailureVersion.String)
 			}
 			tasks[task.Name] = task
+			if isEntryPoint == 1 {
+				job.Entrypoint = task.Name
+			}
 		} else {
 			return nil, err
 		}

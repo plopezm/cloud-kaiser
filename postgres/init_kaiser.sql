@@ -44,6 +44,7 @@ CREATE TABLE jobs_tasks (
   on_success_version      VARCHAR,
   on_failure_name         VARCHAR,
   on_failure_version      VARCHAR,
+  entrypoint              SMALLINT NOT NULL,
   PRIMARY KEY (job_name, job_version, task_name, task_version),
   FOREIGN KEY (job_name, job_version) REFERENCES jobs(name, version),
   FOREIGN KEY (task_name, task_version) REFERENCES tasks(name, version),
