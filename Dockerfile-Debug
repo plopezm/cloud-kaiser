@@ -1,0 +1,23 @@
+FROM golang:1.10.2-alpine3.7 AS build
+RUN apk --no-cache add gcc g++ make ca-certificates
+WORKDIR /go/src/github.com/plopezm/cloud-kaiser
+
+# Compile Delve
+RUN apk add --no-cache git
+RUN go get github.com/derekparker/delve/cmd/dlv
+# Allow delve to run on Alpine based containers.
+RUN apk add --no-cache libc6-compat
+
+COPY glide.lock glide.yaml ./
+COPY vendor vendor
+COPY core core
+COPY query-service query-service
+COPY repository-service repository-service
+COPY kaiser-service kaiser-service
+
+# The -gcflags "all=-N -l" flag helps us get a better debug experience
+RUN go install -gcflags "all=-N -l" ./...
+
+FROM alpine:3.7
+WORKDIR /usr/bin
+COPY --from=build /go/bin .
