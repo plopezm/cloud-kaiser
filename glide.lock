@@ -1,5 +1,5 @@
-hash: e7811105f6743737cda569601a9737c71141800abecb30b32e6054a62a67f854
-updated: 2018-12-31T13:54:35.665957+01:00
+hash: 5a69d89015d1f4192f6c25c327b6434a14c08b53a3d6ed3419420bd99bbf63ff
+updated: 2019-01-04T21:18:36.432073+01:00
 imports:
 - name: github.com/gorilla/context
   version: 51ce91d2eaddeca0ef29a71d766bb3634dadf729
@@ -42,6 +42,8 @@ imports:
   - parser
   - registry
   - token
+- name: github.com/stretchr/testify
+  version: f35b8ab0b5a2cef36673838d662e249dd9c94686
 - name: github.com/tinrab/retry
   version: e979fd9b1d7980d567dd50fc993d06f1fb17eac3
 - name: golang.org/x/net
