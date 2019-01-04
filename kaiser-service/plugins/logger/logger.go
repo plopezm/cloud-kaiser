@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/contextvars"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
-	"github.com/plopezm/cloud-kaiser/kaiser-service/types"
 	"log"
 	"os"
 )
@@ -19,16 +18,14 @@ type LogPlugin struct {
 }
 
 // GetInstance Creates a new plugin instance with a context
-func (plugin *LogPlugin) GetInstance(context context.Context) types.Plugin {
-	newPluginInstance := new(LogPlugin)
-	newPluginInstance.context = context
-	return newPluginInstance
+func (plugin *LogPlugin) SetContext(context context.Context) {
+	plugin.context = context
 }
 
 // GetFunctions returns the functions to be registered in the VM
 func (plugin *LogPlugin) GetFunctions() map[string]interface{} {
 	functions := make(map[string]interface{})
-	functions["logger"] = map[string]interface{}{
+	functions["Logger"] = map[string]interface{}{
 		"info": plugin.Info,
 	}
 	return functions

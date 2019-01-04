@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
-	"github.com/plopezm/cloud-kaiser/kaiser-service/types"
 	"github.com/robertkrimen/otto"
 )
 
@@ -20,20 +19,18 @@ type OSPlugin struct {
 // GetFunctions returns the functions to be registered in the VM
 func (plugin *OSPlugin) GetFunctions() map[string]interface{} {
 	functions := make(map[string]interface{})
-	functions["process"] = map[string]interface{}{
+	functions["Process"] = map[string]interface{}{
 		"sleep": plugin.Sleep,
 	}
-	functions["system"] = map[string]interface{}{
+	functions["System"] = map[string]interface{}{
 		"call": plugin.Call,
 	}
 	return functions
 }
 
 // GetInstance Creates a new plugin instance with a context
-func (plugin *OSPlugin) GetInstance(context context.Context) types.Plugin {
-	newPluginInstance := new(OSPlugin)
-	newPluginInstance.context = context
-	return newPluginInstance
+func (plugin *OSPlugin) SetContext(context context.Context) {
+	plugin.context = context
 }
 
 // Call Calls an existing job
@@ -44,6 +41,6 @@ func (plugin *OSPlugin) Call(jobName string, version string, params map[string]i
 		return res
 	}
 	runnable := engine.CreateRunnable(*job)
-	engine.Execute(runnable, params)
+	engine.Execute(runnable, params, nil)
 	return otto.Value{}
 }

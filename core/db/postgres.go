@@ -48,8 +48,7 @@ func (r *PostgresRepository) ListTasks(ctx context.Context, offset uint64, limit
 	tasks := []types.Task{}
 	for rows.Next() {
 		task := types.Task{}
-		task.Script = new(string)
-		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, task.Script); err == nil {
+		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, &task.Script); err == nil {
 			tasks = append(tasks, task)
 		} else {
 			return nil, err
@@ -73,8 +72,7 @@ func (r *PostgresRepository) FindTaskByName(ctx context.Context, name string) ([
 	tasks := []types.Task{}
 	for rows.Next() {
 		task := types.Task{}
-		task.Script = new(string)
-		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, task.Script); err == nil {
+		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, &task.Script); err == nil {
 			tasks = append(tasks, task)
 		} else {
 			return nil, err
@@ -98,8 +96,7 @@ func (r *PostgresRepository) FindTaskByNameAndVersion(ctx context.Context, name 
 	var task *types.Task
 	if rows.Next() {
 		task = &types.Task{}
-		task.Script = new(string)
-		err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, task.Script)
+		err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, &task.Script)
 		if err != nil {
 			return nil, err
 		}
@@ -316,13 +313,12 @@ func (r *PostgresRepository) findJobTasks(job *types.Job) (map[string]types.JobT
 	tasks := make(map[string]types.JobTask)
 	for rows.Next() {
 		task := types.JobTask{}
-		task.Script = new(string)
 		var onSuccessName sql.NullString
 		var onSuccessVersion sql.NullString
 		var onFailureName sql.NullString
 		var onFailureVersion sql.NullString
 		var isEntryPoint int8
-		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, task.Script, &onSuccessName, &onSuccessVersion, &onFailureName, &onFailureVersion, &isEntryPoint); err == nil {
+		if err = rows.Scan(&task.Name, &task.Version, &task.CreatedAt, &task.Script, &onSuccessName, &onSuccessVersion, &onFailureName, &onFailureVersion, &isEntryPoint); err == nil {
 			if onSuccessName.Valid && onSuccessVersion.Valid {
 				task.OnSuccess = fmt.Sprintf("%s:%s", onSuccessName.String, onSuccessVersion.String)
 			}

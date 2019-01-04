@@ -6,6 +6,7 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/contextvars"
 	"golang.org/x/net/context"
+	"strings"
 )
 
 func CreateRunnable(job types.Job) Runnable {
@@ -17,8 +18,9 @@ func CreateRunnable(job types.Job) Runnable {
 
 type JobRunner struct {
 	types.Job
-	Identifier string
-	StartTime  int64
+	Identifier   string
+	StartTime    int64
+	ResultStatus bool
 }
 
 func (r *JobRunner) GetIdentifier() string {
@@ -48,16 +50,25 @@ func (r *JobRunner) Run() {
 	r.SetStatus(RunnableStatusRunning)
 	task, found := r.Tasks[r.Entrypoint]
 	logger.GetLogger().Debug(fmt.Sprintf("Job %s:%s, entrypoint %s started", r.Name, r.Version, task.Name))
+	var result bool
 	for found {
+		logger.GetLogger().Debug(fmt.Sprintf("Executing script: \n=====\n%s\n=====", task.Script))
 		_, err := vm.Run(task.Script)
-		logger.GetLogger().Debug(fmt.Sprintf("Task %s executed", task.Name))
 		if err == nil {
-			task, found = r.Tasks[task.OnSuccess]
+			task, found = r.Tasks[getTaskName(task.OnSuccess)]
+			result = true
 		} else {
-			task, found = r.Tasks[task.OnFailure]
+			logger.GetLogger().Debug(fmt.Sprintf("Task %s exited with error: %s", task.Name, err.Error()))
+			task, found = r.Tasks[getTaskName(task.OnFailure)]
+			result = false
 		}
 	}
 	r.SetStatus(RunnableStatusStopped)
+	r.SetResultStatus(result)
+}
+
+func getTaskName(taskid string) string {
+	return strings.Split(taskid, ":")[0]
 }
 
 func (r *JobRunner) SetParameters(receivedParameters map[string]interface{}) {
@@ -69,4 +80,12 @@ func (r *JobRunner) SetParameters(receivedParameters map[string]interface{}) {
 		allParams = append(allParams, parameter)
 	}
 	r.Parameters = allParams
+}
+
+func (r *JobRunner) SetResultStatus(result bool) {
+	r.ResultStatus = result
+}
+
+func (r *JobRunner) GetResultStatus() bool {
+	return r.ResultStatus
 }

@@ -14,25 +14,30 @@ var executions = make(map[string]interface{})
 func Start() {
 	for runnable := range threadFinishedChannel {
 		mutex.Lock()
-		delete(executions, fmt.Sprintf("%s-%d", runnable.GetIdentifier(), runnable.GetStartTime()))
+		processKey := fmt.Sprintf("%s-%d", runnable.GetIdentifier(), runnable.GetStartTime())
+		delete(executions, processKey)
 		mutex.Unlock()
-		logger.GetLogger().Debug(fmt.Sprintf("Execution of process %s-%d finished", runnable.GetIdentifier(), runnable.GetStartTime()))
+		logger.GetLogger().Debug(fmt.Sprintf("Execution of process %s finished", processKey))
 	}
 }
 
-func Execute(runnable Runnable, parameters map[string]interface{}) {
+func Execute(runnable Runnable, parameters map[string]interface{}, onProcessFinishes chan Runnable) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	thread := func() {
 		runnable.Run()
 		threadFinishedChannel <- runnable
+		if onProcessFinishes != nil {
+			onProcessFinishes <- runnable
+		}
 	}
 	runnable.SetStartTime(time.Now().UnixNano())
 	runnable.SetStatus(RunnableStatusRunning)
 	runnable.SetParameters(parameters)
-	executions[fmt.Sprintf("%s-%d", runnable.GetIdentifier(), runnable.GetStartTime())] = runnable
+	processKey := fmt.Sprintf("%s-%d", runnable.GetIdentifier(), runnable.GetStartTime())
+	executions[processKey] = runnable
 	go thread()
-	logger.GetLogger().Debug(fmt.Sprintf("Execution of process %s-%d started", runnable.GetIdentifier(), runnable.GetStartTime()))
+	logger.GetLogger().Debug(fmt.Sprintf("Execution of process %s started", processKey))
 }
 
 func GetExecutions() []Runnable {

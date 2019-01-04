@@ -23,7 +23,8 @@ func NewVM(context context.Context) *otto.Otto {
 
 func addRegistedPlugins(vm *otto.Otto, context context.Context) {
 	for _, plugin := range configuredPlugins {
-		registerPlugin(vm, plugin.GetInstance(context))
+		plugin.SetContext(context)
+		registerPlugin(vm, plugin)
 	}
 }
 

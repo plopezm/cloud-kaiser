@@ -14,5 +14,7 @@ type Runnable interface {
 	GetStatus() RunnableStatus
 	SetStatus(status RunnableStatus)
 	SetParameters(map[string]interface{})
+	SetResultStatus(result bool)
+	GetResultStatus() bool
 	Run()
 }

@@ -40,10 +40,13 @@ func executeJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	engine.Execute(engine.CreateRunnable(*job), parameters)
+	onJobFinish := make(chan engine.Runnable)
+
+	engine.Execute(engine.CreateRunnable(*job), parameters, onJobFinish)
+	runnable := <-onJobFinish
 
 	util.ResponseOk(w, map[string]interface{}{
-		"status": "OK",
+		"status": runnable.GetResultStatus(),
 		"job":    fmt.Sprintf("%s:%s", vars["name"], vars["version"]),
 		"msg":    "Job executed",
 	})

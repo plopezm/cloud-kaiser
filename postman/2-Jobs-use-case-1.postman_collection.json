@@ -38,7 +38,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"PrintHelloWorld\",\n\t\"version\": \"1.0\",\n    \"script\": \"logger.info('Hello World')\"\n}"
+                  "raw": "{\n\t\"name\": \"PrintHelloWorld\",\n\t\"version\": \"1.0\",\n    \"script\": \"Logger.info('Hello World')\"\n}"
 				},
 				"url": {
 					"raw": "localhost:8000/repository/v1/tasks",

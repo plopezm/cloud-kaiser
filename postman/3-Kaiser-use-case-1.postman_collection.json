@@ -41,6 +41,50 @@
 				}
 			},
 			"response": []
+        },
+      {
+        "name": "Execute Job",
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "ae7d461f-e05a-406f-90e6-d1aa199c432f",
+              "exec": [
+                ""
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ],
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "name": "Content-Type",
+              "value": "application/json",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "localhost:8000/v1/jobs/HelloWorldJob/1.0",
+            "host": [
+              "localhost"
+            ],
+            "port": "8000",
+            "path": [
+              "v1",
+              "jobs",
+              "HelloWorldJob",
+              "1.0"
+            ]
+          }
+        },
+        "response": []
 		}
 	]
 }

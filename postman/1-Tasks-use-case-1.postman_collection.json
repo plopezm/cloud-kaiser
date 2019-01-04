@@ -38,7 +38,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"SuccessLogTask\",\n\t\"version\": \"1.0\",\n    \"script\": \"logger.info('success')\"\n}"
+                  "raw": "{\n\t\"name\": \"SuccessLogTask\",\n\t\"version\": \"1.0\",\n    \"script\": \"Logger.info('success')\"\n}"
 				},
 				"url": {
 					"raw": "localhost:8000/repository/v1/tasks",
@@ -88,7 +88,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"FailureLogTask\",\n\t\"version\": \"1.0\",\n    \"script\": \"logger.info('failure')\"\n}"
+                  "raw": "{\n\t\"name\": \"FailureLogTask\",\n\t\"version\": \"1.0\",\n    \"script\": \"Logger.info('failure')\"\n}"
 				},
 				"url": {
 					"raw": "localhost:8000/repository/v1/tasks",

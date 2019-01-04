@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/gob"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
-	"github.com/plopezm/cloud-kaiser/kaiser-service/types"
 	"github.com/robertkrimen/otto"
 	"io/ioutil"
 	gohttp "net/http"
@@ -33,16 +32,14 @@ type Plugin struct {
 }
 
 // GetInstance Creates a new plugin instance with a context
-func (plugin *Plugin) GetInstance(context context.Context) types.Plugin {
-	newPluginInstance := new(Plugin)
-	newPluginInstance.context = context
-	return newPluginInstance
+func (plugin *Plugin) SetContext(context context.Context) {
+	plugin.context = context
 }
 
 // GetFunctions returns the functions to be registered in the VM
 func (plugin *Plugin) GetFunctions() map[string]interface{} {
 	functions := make(map[string]interface{})
-	functions["http"] = map[string]interface{}{
+	functions["Http"] = map[string]interface{}{
 		"get": plugin.Get,
 	}
 	return functions

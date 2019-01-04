@@ -68,10 +68,10 @@ services:
     command: "kaiser-service"
     depends_on:
       - "postgres"
-      - "nats"
     ports:
       - "8080"
     environment:
+      POSTGRES_ADDR: "postgres"
       POSTGRES_DB: "kaiserdb"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
