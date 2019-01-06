@@ -3,6 +3,8 @@ package engine
 import (
 	"fmt"
 	"github.com/plopezm/cloud-kaiser/core/logger"
+	"github.com/plopezm/cloud-kaiser/kaiser-service/contextvars"
+	"io/ioutil"
 	"sync"
 	"time"
 )
@@ -48,4 +50,9 @@ func GetExecutions() []Runnable {
 		executions = append(executions, runnable)
 	}
 	return executions
+}
+
+func GetLogs(jobname string, version string) (string, error) {
+	bytes, err := ioutil.ReadFile(fmt.Sprintf("%s/%s_%s.log", contextvars.DefaultLogFolder, jobname, version))
+	return string(bytes), err
 }

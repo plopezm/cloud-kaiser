@@ -35,9 +35,9 @@ func (plugin *LogPlugin) GetFunctions() map[string]interface{} {
 func (plugin *LogPlugin) Info(args ...interface{}) {
 	jobName := plugin.context.Value(contextvars.JobName).(string)
 	jobVersion := plugin.context.Value(contextvars.JobVersion).(string)
-	f, err := os.OpenFile("logs/"+jobName+"_"+jobVersion+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile(contextvars.DefaultLogFolder+"/"+jobName+"_"+jobVersion+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatalln("Error creating file logs/" + jobName + ".log")
+		log.Fatalln("Error creating file " + contextvars.DefaultLogFolder + "/" + jobName + ".log")
 		return
 	}
 	defer f.Close()

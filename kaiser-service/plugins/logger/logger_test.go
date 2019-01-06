@@ -13,11 +13,11 @@ import (
 )
 
 func createTestFolder() {
-	os.Mkdir("logs", 0755)
+	os.Mkdir(contextvars.DefaultLogFolder, 0755)
 }
 
 func cleanTestFolder() {
-	os.RemoveAll("logs")
+	os.RemoveAll(contextvars.DefaultLogFolder)
 }
 
 func fileExists(folder string, filename string) bool {
@@ -63,8 +63,8 @@ func TestLogPlugin_Info(t *testing.T) {
 
 	// Then
 	assert.Equal(t, err, nil)
-	assert.Equal(t, fileExists("logs", "test_v1.log"), true)
-	assert.Equal(t, fileContainsLine("logs/test_v1.log", "hello world"), true)
+	assert.Equal(t, fileExists(contextvars.DefaultLogFolder, "test_v1.log"), true)
+	assert.Equal(t, fileContainsLine(contextvars.DefaultLogFolder+"/test_v1.log", "hello world"), true)
 
 	cleanTestFolder()
 }

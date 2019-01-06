@@ -9,11 +9,13 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/util"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
 	"net/http"
+	"strings"
 )
 
 func AddRoutes(router *mux.Router) *mux.Router {
 	router.HandleFunc("/health", healthStatusHandler).Methods("STATUS", "GET")
 	router.HandleFunc("/jobs/{name}/{version}", executeJob).Methods("POST")
+	router.HandleFunc("/jobs/{name}/{version}", getJobLogs).Methods("STATUS", "GET")
 	return router
 }
 
@@ -49,5 +51,21 @@ func executeJob(w http.ResponseWriter, r *http.Request) {
 		"status": runnable.GetResultStatus(),
 		"job":    fmt.Sprintf("%s:%s", vars["name"], vars["version"]),
 		"msg":    "Job executed",
+	})
+}
+
+func getJobLogs(w http.ResponseWriter, r *http.Request) {
+	logger.GetLogger().Debug("Called executeJob")
+	vars := mux.Vars(r)
+
+	content, err := engine.GetLogs(vars["name"], vars["version"])
+	if err != nil {
+		util.ResponseError(w, http.StatusNotFound, fmt.Sprintf("Error found %s", err.Error()))
+		return
+	}
+	util.ResponseOk(w, map[string]interface{}{
+		"status": true,
+		"job":    fmt.Sprintf("%s:%s", vars["name"], vars["version"]),
+		"logs":   strings.Split(content, "\n"),
 	})
 }
