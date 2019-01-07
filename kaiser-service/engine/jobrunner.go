@@ -5,7 +5,6 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/logger"
 	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/contextvars"
-	"golang.org/x/net/context"
 	"strings"
 )
 
@@ -44,15 +43,17 @@ func (r *JobRunner) SetStatus(status RunnableStatus) {
 }
 
 func (r *JobRunner) Run() {
-	runnerContext := context.WithValue(context.Background(), contextvars.JobName, r.Name)
-	runnerContext = context.WithValue(runnerContext, contextvars.JobVersion, r.Version)
-	vm := NewVM(runnerContext)
+	vm := NewVM()
 	r.SetStatus(RunnableStatusRunning)
+	vm.Set(contextvars.JobName, r.Name)
+	vm.Set(contextvars.JobVersion, r.Version)
 	task, found := r.Tasks[r.Entrypoint]
 	logger.GetLogger().Debug(fmt.Sprintf("Job %s:%s, entrypoint %s started", r.Name, r.Version, task.Name))
 	var result bool
 	for found {
 		logger.GetLogger().Debug(fmt.Sprintf("Executing script: \n=====\n%s\n=====", task.Script))
+		vm.Set(contextvars.TaskName, task.Name)
+		vm.Set(contextvars.TaskVersion, task.Version)
 		_, err := vm.Run(task.Script)
 		if err == nil {
 			task, found = r.Tasks[getTaskName(task.OnSuccess)]

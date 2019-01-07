@@ -56,3 +56,9 @@ func GetLogs(jobname string, version string) (string, error) {
 	bytes, err := ioutil.ReadFile(fmt.Sprintf("%s/%s_%s.log", contextvars.DefaultLogFolder, jobname, version))
 	return string(bytes), err
 }
+
+func notifyExecutionLogs(jobname string, jobversion string, taskname string, taskversion string) {
+	//bytes, err := ioutil.ReadFile(fmt.Sprintf("%s/%s_%s.log", contextvars.DefaultLogFolder, jobname, jobversion))
+
+	//search.InsertLog(context.Background(), jobname, jobversion, taskname, taskversion, )
+}

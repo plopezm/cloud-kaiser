@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"context"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/types"
 	"github.com/robertkrimen/otto"
 )
@@ -15,15 +14,14 @@ func RegisterPlugin(plugin types.Plugin) {
 
 // NewVMWithPlugins Creates a new VM instance using plugins.
 // @Param context map[string]interface{} Contains information about the process who creates this VM
-func NewVM(context context.Context) *otto.Otto {
+func NewVM() *otto.Otto {
 	vm := otto.New()
-	addRegistedPlugins(vm, context)
+	addRegistedPlugins(vm)
 	return vm
 }
 
-func addRegistedPlugins(vm *otto.Otto, context context.Context) {
+func addRegistedPlugins(vm *otto.Otto) {
 	for _, plugin := range configuredPlugins {
-		plugin.SetContext(context)
 		registerPlugin(vm, plugin)
 	}
 }

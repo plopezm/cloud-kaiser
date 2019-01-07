@@ -29,6 +29,7 @@ services:
       - xpack.monitoring.enabled=false
       - cluster.name=elasticsearch
       - bootstrap.memory_lock=true
+      - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -68,6 +69,7 @@ services:
     command: "kaiser-service"
     depends_on:
       - "postgres"
+      - "elasticsearch"
     ports:
       - "8080"
     environment:
@@ -76,6 +78,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
       NATS_ADDRESS: "nats:4222"
+      ELASTIC_ADDR: "elasticsearch:9200"
       LOG_LEVEL: "DEBUG"
       SERVICE_PORT: "8080"
   kong:

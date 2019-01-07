@@ -5,7 +5,7 @@ import (
 )
 
 // Sleep Sleeps the current process
-func (plugin *OSPlugin) Sleep(number int, unit string) {
+func Sleep(number int, unit string) {
 	var timeUnit time.Duration
 	switch unit {
 	case "MS":

@@ -6,6 +6,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/logger"
+	"github.com/plopezm/cloud-kaiser/core/search"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/interfaces"
 	_ "github.com/plopezm/cloud-kaiser/kaiser-service/plugins/http"
@@ -17,13 +18,13 @@ import (
 )
 
 type Config struct {
-	PostgresAddress  string `envconfig:"POSTGRES_ADDR"`
-	PostgresDB       string `envconfig:"POSTGRES_DB"`
-	PostgresUser     string `envconfig:"POSTGRES_USER"`
-	PostgresPassword string `envconfig:"POSTGRES_PASSWORD"`
-	NatsAddress      string `envconfig:"NATS_ADDRESS"`
-	LogLevel         string `envconfig:"LOG_LEVEL"`
-	ServicePort      int    `envconfig:"SERVICE_PORT"`
+	PostgresAddress      string `envconfig:"POSTGRES_ADDR"`
+	PostgresDB           string `envconfig:"POSTGRES_DB"`
+	PostgresUser         string `envconfig:"POSTGRES_USER"`
+	PostgresPassword     string `envconfig:"POSTGRES_PASSWORD"`
+	ElasticSearchAddress string `envconfig:"ELASTIC_ADDR"`
+	LogLevel             string `envconfig:"LOG_LEVEL"`
+	ServicePort          int    `envconfig:"SERVICE_PORT"`
 }
 
 func main() {
@@ -43,13 +44,25 @@ func main() {
 		addr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", config.PostgresUser, config.PostgresPassword, config.PostgresAddress, config.PostgresDB)
 		repo, err := db.NewPostgres(addr)
 		if err != nil {
-			log.Warn(err)
+			log.Error(err)
 			return err
 		}
 		db.SetRepository(repo)
 		return nil
 	})
 	defer db.Close()
+
+	// Connect to ElasticSearch
+	retry.ForeverSleep(2*time.Second, func(_ int) error {
+		es, err := search.NewElasticSearch(fmt.Sprintf("http://%s", config.ElasticSearchAddress))
+		if err != nil {
+			log.Error(err)
+			return err
+		}
+		search.SetRepository(es)
+		return nil
+	})
+	defer search.Close()
 
 	servicePort := config.ServicePort
 	if servicePort == 0 {

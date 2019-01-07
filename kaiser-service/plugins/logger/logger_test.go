@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"context"
 	"github.com/magiconair/properties/assert"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/contextvars"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/types"
@@ -44,9 +43,8 @@ func fileContainsLine(filepath string, line string) bool {
 }
 
 func initializeVM(vm *otto.Otto, plugin types.Plugin) {
-	ctx := context.WithValue(context.Background(), contextvars.JobName, "test")
-	ctx = context.WithValue(ctx, contextvars.JobVersion, "v1")
-	plugin.SetContext(ctx)
+	vm.Set(contextvars.JobName, "test")
+	vm.Set(contextvars.JobVersion, "v1")
 	for key, function := range plugin.GetFunctions() {
 		vm.Set(key, function)
 	}
@@ -59,12 +57,12 @@ func TestLogPlugin_Info(t *testing.T) {
 	initializeVM(vm, new(LogPlugin))
 
 	// When
-	_, err := vm.Run("Logger.info('hello world')")
+	_, err := vm.Run("Logger.info(\"hello world\")")
 
 	// Then
-	assert.Equal(t, err, nil)
-	assert.Equal(t, fileExists(contextvars.DefaultLogFolder, "test_v1.log"), true)
-	assert.Equal(t, fileContainsLine(contextvars.DefaultLogFolder+"/test_v1.log", "hello world"), true)
+	assert.Equal(t, err, nil, "Error should be null")
+	assert.Equal(t, fileExists(contextvars.DefaultLogFolder, "test_v1.log"), true, "The logfile was not created")
+	assert.Equal(t, fileContainsLine(contextvars.DefaultLogFolder+"/test_v1.log", "hello world"), true, "The log message was not written")
 
 	cleanTestFolder()
 }

@@ -2,7 +2,6 @@ package http
 
 import (
 	"bytes"
-	"context"
 	"encoding/gob"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
 	"github.com/robertkrimen/otto"
@@ -28,25 +27,19 @@ type Response struct {
 
 // Plugin Implements http function
 type Plugin struct {
-	context context.Context
-}
-
-// GetInstance Creates a new plugin instance with a context
-func (plugin *Plugin) SetContext(context context.Context) {
-	plugin.context = context
 }
 
 // GetFunctions returns the functions to be registered in the VM
 func (plugin *Plugin) GetFunctions() map[string]interface{} {
 	functions := make(map[string]interface{})
 	functions["Http"] = map[string]interface{}{
-		"get": plugin.Get,
+		"get": Get,
 	}
 	return functions
 }
 
 // Get Performs an http get request
-func (plugin *Plugin) Get(call otto.FunctionCall) otto.Value {
+func Get(call otto.FunctionCall) otto.Value {
 	urlArgument := call.Argument(0)
 	headers := call.Argument(1).Object()
 

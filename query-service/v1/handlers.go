@@ -10,13 +10,16 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 const handlersPrefix = "/v1"
 
 func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
-	router.HandleFunc(handlersPrefix+"/search/tasks", listElasticSearchTasks).
+	router.HandleFunc(handlersPrefix+"/search/tasks", searchTasks).
+		Methods("GET", "OPTIONS")
+	router.HandleFunc(handlersPrefix+"/search/logs", searchLogs).
 		Methods("GET", "OPTIONS")
 	router.HandleFunc(handlersPrefix+"/tasks", listTasksHandler).
 		Methods("GET", "OPTIONS")
@@ -39,14 +42,61 @@ func OnTaskCreated(task types.Task) {
 	}
 }
 
-func listElasticSearchTasks(w http.ResponseWriter, r *http.Request) {
+func searchLogs(w http.ResponseWriter, r *http.Request) {
 	var err error
 	ctx := r.Context()
 
 	// Read parameters
 	query := r.FormValue("query")
 	if len(query) == 0 {
-		util.ResponseError(w, http.StatusBadRequest, "Missing query parameter")
+		util.ResponseError(w, http.StatusBadRequest, "Missing 'query' parameter")
+		return
+	}
+	fieldsString := r.FormValue("fields")
+	if len(fieldsString) == 0 {
+		util.ResponseError(w, http.StatusBadRequest, "Missing 'fields' parameter")
+		return
+	}
+	fields := strings.Split(fieldsString, ",")
+
+	offset := uint64(0)
+	offsetStr := r.FormValue("offset")
+	limit := uint64(100)
+	takeStr := r.FormValue("limit")
+	if len(offsetStr) != 0 {
+		offset, err = strconv.ParseUint(offsetStr, 10, 64)
+		if err != nil {
+			util.ResponseError(w, http.StatusBadRequest, "Invalid 'offset' parameter")
+			return
+		}
+	}
+	if len(takeStr) != 0 {
+		limit, err = strconv.ParseUint(takeStr, 10, 64)
+		if err != nil {
+			util.ResponseError(w, http.StatusBadRequest, "Invalid 'limit' parameter")
+			return
+		}
+	}
+
+	// Search logs
+	logs, err := search.FindLogs(ctx, query, fields, offset, limit)
+	if err != nil {
+		log.Println(err)
+		util.ResponseOk(w, []types.JobTask{})
+		return
+	}
+
+	util.ResponseOk(w, logs)
+}
+
+func searchTasks(w http.ResponseWriter, r *http.Request) {
+	var err error
+	ctx := r.Context()
+
+	// Read parameters
+	query := r.FormValue("query")
+	if len(query) == 0 {
+		util.ResponseError(w, http.StatusBadRequest, "Missing 'query' parameter")
 		return
 	}
 	offset := uint64(0)
@@ -56,14 +106,14 @@ func listElasticSearchTasks(w http.ResponseWriter, r *http.Request) {
 	if len(offsetStr) != 0 {
 		offset, err = strconv.ParseUint(offsetStr, 10, 64)
 		if err != nil {
-			util.ResponseError(w, http.StatusBadRequest, "Invalid offset parameter")
+			util.ResponseError(w, http.StatusBadRequest, "Invalid 'offset' parameter")
 			return
 		}
 	}
 	if len(takeStr) != 0 {
 		limit, err = strconv.ParseUint(takeStr, 10, 64)
 		if err != nil {
-			util.ResponseError(w, http.StatusBadRequest, "Invalid limit parameter")
+			util.ResponseError(w, http.StatusBadRequest, "Invalid 'limit' parameter")
 			return
 		}
 	}

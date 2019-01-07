@@ -2,8 +2,10 @@ package contextvars
 
 // Context variables used for plugins
 const (
-	JobName    = "jobname"
-	JobVersion = "version"
+	JobName     = "$JOB_NAME"
+	JobVersion  = "$JOB_VERSION"
+	TaskName    = "$TASK_NAME"
+	TaskVersion = "$TASK_VERSION"
 )
 
 const (
