@@ -1,3 +1,5 @@
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
 /* You can add global styles to this file, and also import other style files */
 html, body, material-app, mat-sidenav-container {
   height: 100%;
@@ -5,6 +7,18 @@ html, body, material-app, mat-sidenav-container {
   margin: 0;
 }
 
-.container {
+.full-container {
   height: 100%;
+}
+
+.margin-sm {
+  margin: 12px;
+}
+
+.tleft {
+  text-align: left !important;
+}
+
+.tright {
+  text-align: right !important;
 }

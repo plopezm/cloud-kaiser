@@ -1,8 +1,17 @@
-.linkcard {
-  max-width: 400px;
+a {
+  color: inherit; /* blue colors for links too */
+  text-decoration: inherit; /* no underline */
 }
 
-.linkcard-header-image {
-  background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
-  background-size: cover;
+.linkcard {
+  max-width: 300px;
+  /* Add shadows to create the "card" effect */
+  box-shadow: 0 4px 8px 1px rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.linkcard > mat-card-content > p {
+  font-family: Arial;
+  font-size: 25px;
+  text-align: center;
 }

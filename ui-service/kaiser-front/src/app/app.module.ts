@@ -12,12 +12,14 @@ import {HomeComponent} from './containers/home/home.component';
 import {AppRoutingModule} from './app-routing.module';
 import {MenubarComponent} from './containers/menubar/menubar.component';
 import {LinkcardComponent} from './components/cards/linkcard/linkcard.component';
+import {FlexLayoutModule} from "@angular/flex-layout";
 
 @NgModule({
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    FlexLayoutModule,
     MatToolbarModule,
     MatSidenavModule,
     MatButtonModule,

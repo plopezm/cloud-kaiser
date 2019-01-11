@@ -1,13 +1,20 @@
 <mat-sidenav-container (backdropClick)="sidenav.close()">
 
-  <mat-sidenav #sidenav (keydown.escape)="sidenav.close()" mode="push" disableClose>
-    <p>
-      <button mat-button (click)="sidenav.close()">Toggle</button>
-    </p>
+  <mat-sidenav #sidenav (keydown.escape)="sidenav.close()" color="primary" class="sidenav-size" disableClose>
+    <mat-toolbar color="primary">
+      <mat-toolbar-row>
+        <h1>Menu</h1>
+      </mat-toolbar-row>
+    </mat-toolbar>
+    <nav fxLayout="column" class="tleft">
+      <a routerLink="/" routerLinkActive="active" mat-button class="tleft">Home</a>
+      <a routerLink="/settings" routerLinkActive="active" mat-button class="tleft">Settings</a>
+      <a routerLink="/help" routerLinkActive="active" mat-button class="tleft">Help</a>
+    </nav>
   </mat-sidenav>
 
   <mat-sidenav-content>
-    <mat-toolbar class="bar">
+    <mat-toolbar color="primary" class="bar">
       <mat-toolbar-row class="bar-components-space">
         <button mat-button (click)="sidenav.open()">
           <i class="material-icons">format_list_bulleted</i>

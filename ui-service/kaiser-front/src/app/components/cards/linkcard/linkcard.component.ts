@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-linkcard',
@@ -6,6 +6,10 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./linkcard.component.css']
 })
 export class LinkcardComponent implements OnInit {
+
+  @Input() image: string;
+  @Input() text: string;
+  @Input() linkTo: string;
 
   constructor() {
   }
