@@ -1,0 +1,24 @@
+<mat-sidenav-container (backdropClick)="sidenav.close()">
+
+  <mat-sidenav #sidenav (keydown.escape)="sidenav.close()" mode="push" disableClose>
+    <p>
+      <button mat-button (click)="sidenav.close()">Toggle</button>
+    </p>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar class="bar">
+      <mat-toolbar-row class="bar-components-space">
+        <button mat-button (click)="sidenav.open()">
+          <i class="material-icons">format_list_bulleted</i>
+        </button>
+        <h1>Kaiser Dashboard</h1>
+      </mat-toolbar-row>
+    </mat-toolbar>
+
+    <div class="container">
+      <!-- Will render all the content of the application -->
+      <ng-content></ng-content>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
