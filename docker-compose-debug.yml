@@ -36,27 +36,41 @@ services:
         hard: -1
       nofile: 65536
   repository-service:
-    build: "."
-    command: "repository-service"
+    build:
+      context: "."
+      dockerfile: "Dockerfile-Debug"
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+    command: "dlv --listen=:40001 --headless=true --api-version=2 exec repository-service"
     depends_on:
       - "postgres"
       - "nats"
     ports:
       - "8080"
+      - "40001:40001"
     environment:
       POSTGRES_DB: "kaiserdb"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
       NATS_ADDRESS: "nats:4222"
   query-service:
-    build: "."
-    command: "query-service"
+    build:
+      context: "."
+      dockerfile: "Dockerfile-Debug"
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+    command: "dlv --listen=:40002 --headless=true --api-version=2 exec query-service"
     depends_on:
       - "postgres"
       - "nats"
       - "elasticsearch"
     ports:
       - "8080"
+      - "40002:40002"
     environment:
       POSTGRES_DB: "kaiserdb"
       POSTGRES_USER: "postgres"
