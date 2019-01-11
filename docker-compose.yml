@@ -4,6 +4,10 @@ volumes:
   dataelasticsearch: {}
   datapostgres: {}
 services:
+  ui-service:
+    build: "./ui-service"
+    ports:
+      - "80:80"
   postgres:
     build: "./postgres"
     restart: "always"

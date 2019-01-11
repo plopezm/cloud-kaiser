@@ -1,0 +1,22 @@
+# dependencies
+kaiser-front/node_modules
+
+# compiled output
+kaiser-front/dist
+kaiser-front/tmp
+kaiser-front/out-tsc
+
+# System Files
+kaiser-front/.DS_Store
+kaiser-front/Thumbs.db
+
+# misc
+kaiser-front/.sass-cache
+kaiser-front/connect.lock
+kaiser-front/coverage
+kaiser-front/libpeerconnection.log
+kaiser-front/npm-debug.log
+kaiser-front/yarn-error.log
+kaiser-front/testem.log
+kaiser-front/typings
+kaiser-front/README.md
