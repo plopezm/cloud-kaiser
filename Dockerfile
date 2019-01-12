@@ -7,6 +7,7 @@ COPY vendor vendor
 COPY core core
 COPY query-service query-service
 COPY repository-service repository-service
+COPY pusher-service pusher-service
 COPY kaiser-service kaiser-service
 
 RUN go install ./...

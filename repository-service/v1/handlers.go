@@ -38,7 +38,7 @@ func createTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Publish event
-	if err := event.PublishTaskCreated(task); err != nil {
+	if err := event.PublishEvent(event.TaskCreated, task); err != nil {
 		log.Println(err)
 		util.ResponseError(w, http.StatusBadRequest, "Create task error: "+err.Error())
 		return

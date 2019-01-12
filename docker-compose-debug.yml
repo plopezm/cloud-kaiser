@@ -55,6 +55,8 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
       NATS_ADDRESS: "nats:4222"
+      LOG_LEVEL: "DEBUG"
+      SERVICE_PORT: "8080"
   query-service:
     build:
       context: "."
@@ -75,8 +77,24 @@ services:
       POSTGRES_DB: "kaiserdb"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
+      ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
+      LOG_LEVEL: "DEBUG"
+      SERVICE_PORT: "8080"
+  pusher-service:
+    build: "."
+    command: "dlv --listen=:40003 --headless=true --api-version=2 exec pusher-service"
+    depends_on:
+      - "postgres"
+      - "nats"
+      - "elasticsearch"
+    ports:
+      - "8080"
+      - "40003:40003"
+    environment:
       NATS_ADDRESS: "nats:4222"
       ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
+      LOG_LEVEL: "DEBUG"
+      SERVICE_PORT: "8080"
   kaiser-service:
     build:
       context: "."

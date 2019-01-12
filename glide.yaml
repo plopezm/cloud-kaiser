@@ -17,3 +17,5 @@ import:
 - package: github.com/robertkrimen/otto
 - package: github.com/stretchr/testify
   version: v1.2.2
+- package: github.com/gorilla/websocket
+  version: v1.4.0

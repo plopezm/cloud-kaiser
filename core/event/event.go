@@ -1,11 +1,9 @@
 package event
 
-import "github.com/plopezm/cloud-kaiser/core/types"
-
 type EventStore interface {
 	Close()
-	PublishTaskCreated(types.Task) error
-	OnTaskCreated(MessageAddress, func(task types.Task)) error
+	PublishEvent(subject MessageSubject, content interface{}) error
+	OnEvent(subject MessageSubject, f func(event Envelope)) error
 }
 
 var impl EventStore
@@ -18,10 +16,10 @@ func Close() {
 	impl.Close()
 }
 
-func PublishTaskCreated(task types.Task) error {
-	return impl.PublishTaskCreated(task)
+func PublishEvent(subject MessageSubject, content interface{}) error {
+	return impl.PublishEvent(subject, content)
 }
 
-func OnTaskCreated(ma MessageAddress, f func(task types.Task)) error {
-	return impl.OnTaskCreated(ma, f)
+func OnEvent(subject MessageSubject, f func(event Envelope)) error {
+	return impl.OnEvent(subject, f)
 }

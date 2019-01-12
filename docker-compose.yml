@@ -40,6 +40,20 @@ services:
         soft: -1
         hard: -1
       nofile: 65536
+  pusher-service:
+    build: "."
+    command: "pusher-service"
+    depends_on:
+      - "postgres"
+      - "nats"
+      - "elasticsearch"
+    ports:
+      - "8080"
+    environment:
+      NATS_ADDRESS: "nats:4222"
+      ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
+      LOG_LEVEL: "DEBUG"
+      SERVICE_PORT: "8080"
   repository-service:
     build: "."
     command: "repository-service"
@@ -53,12 +67,13 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
       NATS_ADDRESS: "nats:4222"
+      LOG_LEVEL: "DEBUG"
+      SERVICE_PORT: "8080"
   query-service:
     build: "."
     command: "query-service"
     depends_on:
     - "postgres"
-    - "nats"
     - "elasticsearch"
     ports:
     - "8080"
@@ -66,8 +81,9 @@ services:
       POSTGRES_DB: "kaiserdb"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
-      NATS_ADDRESS: "nats:4222"
       ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
+      LOG_LEVEL: "DEBUG"
+      SERVICE_PORT: "8080"
   kaiser-service:
     build: "."
     command: "kaiser-service"

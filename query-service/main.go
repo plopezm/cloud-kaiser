@@ -5,7 +5,6 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
 	"github.com/plopezm/cloud-kaiser/core/db"
-	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/search"
 	"github.com/plopezm/cloud-kaiser/query-service/v1"
 	"github.com/tinrab/retry"
@@ -18,7 +17,6 @@ type Config struct {
 	PostgresDB           string `envconfig:"POSTGRES_DB"`
 	PostgresUser         string `envconfig:"POSTGRES_USER"`
 	PostgresPassword     string `envconfig:"POSTGRES_PASSWORD"`
-	NatsAddress          string `envconfig:"NATS_ADDRESS"`
 	ElasticSearchAddress string `envconfig:"ELASTICSEARCH_ADDRESS"`
 }
 
@@ -54,23 +52,6 @@ func main() {
 		return nil
 	})
 	defer search.Close()
-
-	// Connect to NATS
-	retry.ForeverSleep(2*time.Second, func(_ int) error {
-		messaging, err := event.NewNats(fmt.Sprintf("nats://%s", config.NatsAddress))
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-		err = messaging.OnTaskCreated(event.TaskCreated, v1.OnTaskCreated)
-		if err != nil {
-			log.Println(err)
-			return err
-		}
-		event.SetEventStore(messaging)
-		return nil
-	})
-	defer event.Close()
 
 	router := v1.NewRouter()
 	if err := http.ListenAndServe(":8080", router); err != nil {

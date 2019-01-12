@@ -1,8 +1,6 @@
 hash: c5dc08b402d8c391a7580732a8668322baa2caa43ca6b98b0678de6c137416c3
-updated: 2019-01-12T14:31:09.972675+01:00
+updated: 2019-01-12T13:05:10.640577+01:00
 imports:
-- name: github.com/gorilla/context
-  version: 51ce91d2eaddeca0ef29a71d766bb3634dadf729
 - name: github.com/gorilla/handlers
   version: 7e0847f9db758cdebd26c149d0ae9d5d0b9c98ce
 - name: github.com/gorilla/mux
@@ -13,47 +11,14 @@ imports:
   version: f611eb38b3875cc3bd991ca91c51d06446afa14c
 - name: github.com/lib/pq
   version: 4ded0e9383f75c197b3a2aaa6d590ac52df6fd79
-  subpackages:
-  - oid
-- name: github.com/mailru/easyjson
-  version: 60711f1a8329503b04e1c88535f419d0bb440bff
-  subpackages:
-  - buffer
-  - jlexer
-  - jwriter
 - name: github.com/nats-io/go-nats
   version: fb0396ee0bdb8018b0fef30d6d1de798ce99cd05
-  subpackages:
-  - encoders/builtin
-  - util
-- name: github.com/nats-io/nuid
-  version: 3024a71c3cbe30667286099921591e6fcc328230
 - name: github.com/olivere/elastic
   version: 425e5369a8f054f4f447f7c8ee1bf605f48425ab
-  subpackages:
-  - config
-  - uritemplates
-- name: github.com/pkg/errors
-  version: 059132a15dd08d6704c67711dae0cf35ab991756
 - name: github.com/robertkrimen/otto
   version: 15f95af6e78dcd2030d8195a138bd88d4f403546
-  subpackages:
-  - ast
-  - dbg
-  - file
-  - parser
-  - registry
-  - token
 - name: github.com/stretchr/testify
   version: f35b8ab0b5a2cef36673838d662e249dd9c94686
 - name: github.com/tinrab/retry
   version: e979fd9b1d7980d567dd50fc993d06f1fb17eac3
-- name: gopkg.in/sourcemap.v1
-  version: 6e83acea0053641eff084973fee085f0c193c61a
-  subpackages:
-  - base64vlq
-testImports:
-- name: github.com/magiconair/properties
-  version: 7757cc9fdb852f7579b24170bcacda2c7471bb6a
-  subpackages:
-  - assert
+testImports: []

@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"context"
 	"github.com/gorilla/mux"
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/search"
@@ -34,12 +33,6 @@ func NewRouter() (router *mux.Router) {
 	router.HandleFunc(handlersPrefix+"/jobs/{name}/version/{version}", getJobByNameAndVersion).
 		Methods("GET", "OPTIONS")
 	return
-}
-
-func OnTaskCreated(task types.Task) {
-	if err := search.InsertTask(context.Background(), task); err != nil {
-		log.Println(err)
-	}
 }
 
 func searchLogs(w http.ResponseWriter, r *http.Request) {

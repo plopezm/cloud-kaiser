@@ -1,12 +1,12 @@
 package event
 
-type MessageAddress string
+type MessageSubject string
 
 const (
-	TaskCreated MessageAddress = "task.created"
+	TaskCreated MessageSubject = "task.created"
 )
 
 type Envelope struct {
-	Destination MessageAddress
+	Destination MessageSubject
 	Content     interface{}
 }
