@@ -13,6 +13,7 @@ import (
 	"github.com/tinrab/retry"
 	"log"
 	"net/http"
+	"reflect"
 	"time"
 )
 
@@ -55,7 +56,12 @@ func main() {
 			log.Println(err)
 			return err
 		}
-		err = messaging.OnEvent(event.TaskCreated, onTaskCreated)
+		err = messaging.OnQueuedEvent("pusher-service", event.TaskCreated, reflect.TypeOf(types.Task{}), onEventReceived)
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+		err = messaging.OnQueuedEvent("pusher-service", event.TaskExecutionLog, reflect.TypeOf(types.TaskExecutionLog{}), onEventReceived)
 		if err != nil {
 			log.Println(err)
 			return err
@@ -73,12 +79,21 @@ func main() {
 	}
 }
 
-func onTaskCreated(packet event.Envelope) {
-	switch packet.Destination {
+func onEventReceived(packet event.Envelope) {
+	logger.GetLogger().Debug(fmt.Sprintf("Event received: %s", packet.Subject))
+	switch packet.Subject {
 	case event.TaskCreated:
 		if err := search.InsertTask(context.Background(), packet.Content.(types.Task)); err != nil {
 			logger.GetLogger().Error(fmt.Sprintf("Error in event %s: %s", event.TaskCreated, err.Error()))
 		}
+		logger.GetLogger().Debug(fmt.Sprintf("Event %s processed", packet.Subject))
+	case event.TaskExecutionLog:
+		taskExecutionLog := packet.Content.(types.TaskExecutionLog)
+		err := search.InsertLog(context.Background(), taskExecutionLog.JobName, taskExecutionLog.JobVersion, taskExecutionLog.TaskName, taskExecutionLog.TaskVersion, taskExecutionLog.Line)
+		if err != nil {
+			logger.GetLogger().Error("Error sending message to Elasticsearch: " + err.Error())
+		}
+		logger.GetLogger().Debug(fmt.Sprintf("Event %s processed", packet.Subject))
 	}
 	hub.Broadcast(packet)
 }

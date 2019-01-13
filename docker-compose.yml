@@ -98,7 +98,6 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
       NATS_ADDRESS: "nats:4222"
-      ELASTIC_ADDR: "elasticsearch:9200"
       LOG_LEVEL: "DEBUG"
       SERVICE_PORT: "8080"
   kong:

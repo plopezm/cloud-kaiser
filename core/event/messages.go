@@ -3,10 +3,12 @@ package event
 type MessageSubject string
 
 const (
-	TaskCreated MessageSubject = "task.created"
+	TaskCreated      MessageSubject = "task.created"
+	JobCreated       MessageSubject = "job.created"
+	TaskExecutionLog MessageSubject = "task.execution.log"
 )
 
 type Envelope struct {
-	Destination MessageSubject
-	Content     interface{}
+	Subject MessageSubject `json:"subject"`
+	Content interface{}    `json:"content"`
 }

@@ -1,9 +1,9 @@
 package logger
 
 import (
-	"context"
 	"fmt"
-	"github.com/plopezm/cloud-kaiser/core/search"
+	"github.com/plopezm/cloud-kaiser/core/event"
+	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/contextvars"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
 	"github.com/robertkrimen/otto"
@@ -44,12 +44,12 @@ func Info(call otto.FunctionCall) otto.Value {
 	for _, arg := range call.ArgumentList {
 		logline := fmt.Sprintf("[%s:%s] %s", taskName, taskVersion, arg.String())
 		logger.Println(logline)
-		if search.IsConfigured() {
-			err := search.InsertLog(context.Background(), jobName.String(), jobVersion.String(), taskName.String(), taskVersion.String(), logline)
-			if err != nil {
-				logger.Println("Error sending message to Elasticsearch: " + err.Error())
-			}
-		}
+		event.PublishEvent(event.TaskExecutionLog, types.TaskExecutionLog{
+			JobName:     jobName.String(),
+			JobVersion:  jobVersion.String(),
+			TaskName:    taskName.String(),
+			TaskVersion: taskVersion.String(),
+		})
 	}
 	return otto.Value{}
 }

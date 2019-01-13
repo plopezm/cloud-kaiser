@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 	"github.com/nats-io/go-nats"
-	"github.com/plopezm/cloud-kaiser/core/types"
+	"reflect"
 )
 
 type NatsEventStore struct {
@@ -31,19 +31,32 @@ func (eventStore *NatsEventStore) Close() {
 
 func (eventStore *NatsEventStore) PublishEvent(subject MessageSubject, content interface{}) error {
 	return eventStore.publishMessage(Envelope{
-		Destination: TaskCreated,
-		Content:     content,
+		Subject: subject,
+		Content: content,
 	})
 }
 
-func (eventStore *NatsEventStore) OnEvent(subject MessageSubject, f func(event Envelope)) error {
+func (eventStore *NatsEventStore) OnEvent(subject MessageSubject, contentType reflect.Type, f func(event Envelope)) error {
 	var err error
-	content := types.Task{}
 	eventStore.taskCreatedSubscription, err = eventStore.nc.Subscribe(string(subject), func(msg *nats.Msg) {
-		eventStore.readMessage(msg.Data, &content)
+		recipient := reflect.New(contentType)
+		eventStore.readMessage(msg.Data, recipient.Interface())
 		f(Envelope{
-			Destination: MessageSubject(msg.Subject),
-			Content:     content,
+			Subject: subject,
+			Content: recipient.Elem().Interface(),
+		})
+	})
+	return err
+}
+
+func (eventStore *NatsEventStore) OnQueuedEvent(group string, subject MessageSubject, contentType reflect.Type, f func(event Envelope)) error {
+	var err error
+	eventStore.taskCreatedSubscription, err = eventStore.nc.QueueSubscribe(string(subject), group, func(msg *nats.Msg) {
+		recipient := reflect.New(contentType)
+		eventStore.readMessage(msg.Data, recipient.Interface())
+		f(Envelope{
+			Subject: subject,
+			Content: recipient.Elem().Interface(),
 		})
 	})
 	return err
@@ -54,7 +67,7 @@ func (eventStore *NatsEventStore) publishMessage(envelope Envelope) error {
 	if err != nil {
 		return err
 	}
-	return eventStore.nc.Publish(string(envelope.Destination), data)
+	return eventStore.nc.Publish(string(envelope.Subject), data)
 }
 
 func (eventStore *NatsEventStore) writeMessage(content interface{}) ([]byte, error) {
