@@ -37,6 +37,8 @@ func main() {
 	logger.InitializeLogger(config.LogLevel)
 	hub = pusher.NewHub()
 
+	types.RegisterCoreTypes()
+
 	// Connect to ElasticSearch
 	retry.ForeverSleep(2*time.Second, func(_ int) error {
 		es, err := search.NewElasticSearch(fmt.Sprintf("http://%s", config.ElasticSearchAddress))
@@ -58,12 +60,17 @@ func main() {
 		}
 		err = messaging.OnQueuedEvent("pusher-service", event.TaskCreated, reflect.TypeOf(types.Task{}), onEventReceived)
 		if err != nil {
-			log.Println(err)
+			logger.GetLogger().Error(err)
 			return err
 		}
 		err = messaging.OnQueuedEvent("pusher-service", event.TaskExecutionLog, reflect.TypeOf(types.TaskExecutionLog{}), onEventReceived)
 		if err != nil {
-			log.Println(err)
+			logger.GetLogger().Error(err)
+			return err
+		}
+		err = messaging.OnEvent(event.NotifyUI, reflect.TypeOf(event.UINotification{}), onUIEvent)
+		if err != nil {
+			logger.GetLogger().Error(err)
 			return err
 		}
 		event.SetEventStore(messaging)
@@ -95,5 +102,10 @@ func onEventReceived(packet event.Envelope) {
 		}
 		logger.GetLogger().Debug(fmt.Sprintf("Event %s processed", packet.Subject))
 	}
-	hub.Broadcast(packet)
+}
+
+func onUIEvent(packet event.Envelope) {
+	logger.GetLogger().Debug(
+		fmt.Sprintf("Event received: %s for type %s", packet.Subject, packet.Content.(event.UINotification).Type))
+	hub.Broadcast(packet.Content)
 }

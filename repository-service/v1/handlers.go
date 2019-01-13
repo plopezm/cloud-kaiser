@@ -43,6 +43,14 @@ func createTaskHandler(w http.ResponseWriter, r *http.Request) {
 		util.ResponseError(w, http.StatusBadRequest, "Create task error: "+err.Error())
 		return
 	}
+	if err := event.PublishEvent(event.NotifyUI, event.UINotification{
+		Type:    event.UITaskCreated,
+		Content: task,
+	}); err != nil {
+		log.Println(err)
+		util.ResponseError(w, http.StatusBadRequest, "Create task error: "+err.Error())
+		return
+	}
 
 	// Return new meow
 	util.ResponseOk(w, task)

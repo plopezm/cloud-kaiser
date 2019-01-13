@@ -7,6 +7,7 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/logger"
+	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/interfaces"
 	_ "github.com/plopezm/cloud-kaiser/kaiser-service/plugins/http"
@@ -36,6 +37,8 @@ func main() {
 	}
 
 	logger.InitializeLogger(config.LogLevel)
+	types.RegisterCoreTypes()
+
 	log := logger.GetLogger()
 	log.Debug("Starting service...")
 

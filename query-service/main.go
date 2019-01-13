@@ -6,6 +6,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/search"
+	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/query-service/v1"
 	"github.com/tinrab/retry"
 	"log"
@@ -27,6 +28,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	types.RegisterCoreTypes()
 
 	// Connect to PostgreSQL and inject the repository. The code below retries connection every 2 seconds
 	retry.ForeverSleep(2*time.Second, func(attempt int) error {
