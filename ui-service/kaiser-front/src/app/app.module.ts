@@ -14,6 +14,8 @@ import {MenubarComponent} from './containers/menubar/menubar.component';
 import {LinkcardComponent} from './components/cards/linkcard/linkcard.component';
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {HttpClientModule} from "@angular/common/http";
+import {ManagementComponent} from './containers/management/management.component';
+import {MatPaginatorModule, MatTableModule} from "@angular/material";
 
 @NgModule({
   imports: [
@@ -26,13 +28,16 @@ import {HttpClientModule} from "@angular/common/http";
     MatSidenavModule,
     MatButtonModule,
     MatIconModule,
-    MatCardModule
+    MatCardModule,
+    MatTableModule,
+    MatPaginatorModule
   ],
   declarations: [
     AppComponent,
     HomeComponent,
     MenubarComponent,
-    LinkcardComponent
+    LinkcardComponent,
+    ManagementComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

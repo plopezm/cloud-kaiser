@@ -1,5 +1,5 @@
-hash: c5dc08b402d8c391a7580732a8668322baa2caa43ca6b98b0678de6c137416c3
-updated: 2019-01-12T14:31:09.972675+01:00
+hash: 5630085ae97de53760587d384af60af44c4ff3e378ad5e26f56064914a57c17d
+updated: 2019-01-14T11:47:21.697076+01:00
 imports:
 - name: github.com/gorilla/context
   version: 51ce91d2eaddeca0ef29a71d766bb3634dadf729
@@ -44,6 +44,8 @@ imports:
   - parser
   - registry
   - token
+- name: github.com/satori/go.uuid
+  version: f58768cc1a7a7e77a3bd49e98cdd21419399b6a3
 - name: github.com/stretchr/testify
   version: f35b8ab0b5a2cef36673838d662e249dd9c94686
 - name: github.com/tinrab/retry

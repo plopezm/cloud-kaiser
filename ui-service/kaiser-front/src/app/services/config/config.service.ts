@@ -8,6 +8,14 @@ export class ConfigService {
 
   constructor() {}
 
+  getApiEndpoint() {
+    return environment.apiEndpoint;
+  }
+
+  getWSEndpoint() {
+    return environment.wsEndpoint;
+  }
+
   getTasksURL(): string {
     return `${environment.apiEndpoint}/query/v1/tasks`;
   }
@@ -23,4 +31,5 @@ export class ConfigService {
   searchTasksByNameURL(name: string): string {
     return `${environment.apiEndpoint}/query/v1/search/tasks?query=${name}`;
   }
+
 }

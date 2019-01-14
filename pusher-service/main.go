@@ -9,7 +9,7 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/logger"
 	"github.com/plopezm/cloud-kaiser/core/search"
 	"github.com/plopezm/cloud-kaiser/core/types"
-	"github.com/plopezm/cloud-kaiser/pusher-service/pusher"
+	"github.com/plopezm/cloud-kaiser/pusher-service/wsocket"
 	"github.com/tinrab/retry"
 	"log"
 	"net/http"
@@ -24,8 +24,6 @@ type Config struct {
 	ServicePort          int    `envconfig:"SERVICE_PORT"`
 }
 
-var hub *pusher.Hub
-
 func main() {
 	// Parse configuration from environment variables
 	var config Config
@@ -35,8 +33,6 @@ func main() {
 	}
 
 	logger.InitializeLogger(config.LogLevel)
-	hub = pusher.NewHub()
-
 	types.RegisterCoreTypes()
 
 	// Connect to ElasticSearch
@@ -79,8 +75,9 @@ func main() {
 	defer event.Close()
 
 	// Run WebSocket server
-	go hub.Run()
-	http.HandleFunc("/pusher", hub.HandleWebSocket)
+	go wsocket.Start()
+	http.HandleFunc("/ws/", wsocket.WsPage)
+	logger.GetLogger().Debug("Starting service: pusher-service on port ", config.ServicePort)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.ServicePort), nil); err != nil {
 		logger.GetLogger().Fatal(err)
 	}
@@ -107,5 +104,5 @@ func onEventReceived(packet event.Envelope) {
 func onUIEvent(packet event.Envelope) {
 	logger.GetLogger().Debug(
 		fmt.Sprintf("Event received: %s for type %s", packet.Subject, packet.Content.(event.UINotification).Type))
-	hub.Broadcast(packet.Content)
+	wsocket.Broadcast(packet.Content, nil)
 }

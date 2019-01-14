@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiEndpoint: "localhost:8000"
+  apiEndpoint: "http://localhost:8000",
+  wsEndpoint: "ws://localhost:8000/pusher/ws/"
 };
 
 /*
