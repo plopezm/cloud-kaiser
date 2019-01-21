@@ -10,7 +10,7 @@ spec:
     app: cloud-kaiser
     service: kong-dashboard
   ports:
-    - port: 9000
+    - port: 9200
       targetPort: 8080
       name: admin-panel
   type: LoadBalancer
