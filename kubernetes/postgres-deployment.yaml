@@ -1,0 +1,66 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cloud-kaiser-postgres
+  labels:
+    app: cloud-kaiser
+    service: postgres
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: cloud-kaiser
+    service: postgres
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: cloud-kaiser-postgres-pv
+  labels:
+    app: cloud-kaiser
+    service: postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cloud-kaiser-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: postgres
+  template:
+    metadata:
+      labels:
+        app: cloud-kaiser
+        service: postgres
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: cloud-kaiser-postgres
+          imagePullPolicy: Never
+          image: cloud-kaiser_postgres:latest
+          env:
+            - name: POSTGRES_DB
+              value: kaiserdb
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: cloud-kaiser-postgres-pv
+      volumes:
+        - name: cloud-kaiser-postgres-pv
+          persistentVolumeClaim:
+            claimName: cloud-kaiser-postgres-pv
+

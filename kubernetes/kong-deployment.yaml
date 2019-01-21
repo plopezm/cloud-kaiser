@@ -1,0 +1,82 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cloud-kaiser-kong
+  labels:
+    app: cloud-kaiser
+    service: kong
+spec:
+  selector:
+    app: cloud-kaiser
+    service: kong
+  ports:
+    - port: 80
+      targetPort: 8000
+      name: api
+    - port: 8005
+      targetPort: 8001
+      name: admin-api
+    - port: 443
+      targetPort: 8443
+      name: api-ssl
+    - port: 8006
+      targetPort: 8444
+      name: api-admin-ssl
+  type: LoadBalancer
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cloud-kaiser-kong
+spec:
+  selector:
+    matchLabels:
+      app: cloud-kaiser
+      service: kong
+  template:
+    metadata:
+      name: cloud-kaiser-kong
+      labels:
+        app: cloud-kaiser
+        service: kong
+    spec:
+      containers:
+        - name: cloud-kaiser-kong
+          image: kong:0.14.1-alpine
+          command: [ "/bin/sh", "-c", "--" ]
+          args: [ "kong migrations up && kong start --vv && tail -f /dev/stdout" ]
+          env:
+            - name: KONG_DATABASE
+              value: postgres
+            - name: KONG_PG_DATABASE
+              value: kongdb
+            - name: KONG_PG_HOST
+              value: cloud-kaiser-postgres
+            - name: KONG_PG_USER
+              value: postgres
+            - name: KONG_PG_PASSWORD
+              value: postgres
+            - name: KONG_PROXY_ACCESS_LOG
+              value: /dev/stdout
+            - name: KONG_ADMIN_ACCESS_LOG
+              value: /dev/stdout
+            - name: KONG_PROXY_ERROR_LOG
+              value: /dev/stdout
+            - name: KONG_ADMIN_ERROR_LOG
+              value: /dev/stdout
+            - name: KONG_ADMIN_LISTEN
+              value: 0.0.0.0:8001
+            - name: KONG_ADMIN_LISTEN_SSL
+              value: 0.0.0.0:8444
+          ports:
+            - name: api
+              containerPort: 8000
+            - name: api-ssl
+              containerPort: 8443
+            - name: admin-api
+              containerPort: 8001
+            - name: admin-api-ssl
+              containerPort: 8444
+
+
+

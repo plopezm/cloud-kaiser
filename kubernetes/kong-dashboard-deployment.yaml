@@ -1,0 +1,38 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: cloud-kaiser-kong-dashboard
+  labels:
+    app: cloud-kaiser
+    service: kong-dashboard
+spec:
+  selector:
+    app: cloud-kaiser
+    service: kong-dashboard
+  ports:
+    - port: 9000
+      targetPort: 8080
+      name: admin-panel
+  type: LoadBalancer
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: cloud-kaiser-kong-dashboard
+spec:
+  selector:
+    matchLabels:
+      app: cloud-kaiser
+      service: kong-dashboard
+  template:
+    metadata:
+      labels:
+        app: cloud-kaiser
+        service: kong-dashboard
+    spec:
+      containers:
+        - name: kong-dashboard
+          image: pgbi/kong-dashboard:v3
+          args: [ "start", "--kong-url", "http://cloud-kaiser-kong:8005" ]
+          ports:
+            - containerPort: 8080
