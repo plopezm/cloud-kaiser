@@ -33,6 +33,6 @@ spec:
       containers:
         - name: kong-dashboard
           image: pgbi/kong-dashboard:v3
-          args: [ "start", "--kong-url", "http://cloud-kaiser-kong:8005" ]
+          args: [ "start", "--kong-url", "http://cloud-kaiser-kong:8800" ]
           ports:
             - containerPort: 8080
