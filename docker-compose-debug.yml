@@ -81,7 +81,13 @@ services:
       LOG_LEVEL: "DEBUG"
       SERVICE_PORT: "8080"
   pusher-service:
-    build: "."
+    build:
+      context: "."
+      dockerfile: "Dockerfile-Debug"
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
     command: "dlv --listen=:40003 --headless=true --api-version=2 exec pusher-service"
     depends_on:
       - "postgres"
@@ -117,40 +123,14 @@ services:
       NATS_ADDRESS: "nats:4222"
       LOG_LEVEL: "DEBUG"
       SERVICE_PORT: "8080"
-  kong:
-    image: kong:0.14.1-centos
-    command: sh -c "kong migrations up && kong start --vv"
+  load-balancer:
+    build: "./nginx"
+    deploy:
+      restart_policy:
+        condition: on-failure
     ports:
-      - "8000:8000"
-      - "8443:8443"
-      - "8001:8001"
-      - "8444:8444"
+    - "8000:80"
     depends_on:
-      - "postgres"
-    environment:
-      KONG_DATABASE: "postgres"
-      KONG_PG_DATABASE: "kongdb"
-      KONG_PG_HOST: "postgres"
-      KONG_PG_USER: "postgres"
-      KONG_PG_PASSWORD: "postgres"
-      KONG_PROXY_ACCESS_LOG: "/dev/stdout"
-      KONG_ADMIN_ACCESS_LOG: "/dev/stdout"
-      KONG_PROXY_ERROR_LOG: "/dev/stderr"
-      KONG_ADMIN_ERROR_LOG: "/dev/stderr"
-      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
-      KONG_ADMIN_LISTEN_SSL: "0.0.0.0:8444"
-  kong-dashboard:
-    image: pgbi/kong-dashboard:v3
-    command: start --kong-url http://kong:8001
-    depends_on:
-      - "postgres"
-      - "kong"
-    ports:
-      - "9000:8080"
-  # nginx:
-  #   build: "./nginx"
-  #   ports:
-  #   - "8080:80"
-  #   depends_on:
-  #   - "repository-service"
-  #   - "query-service"
+    - "repository-service"
+    - "query-service"
+    - "kaiser-service"

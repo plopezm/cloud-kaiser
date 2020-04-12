@@ -3,13 +3,14 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/gorilla/mux"
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/logger"
 	"github.com/plopezm/cloud-kaiser/core/util"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
-	"net/http"
-	"strings"
 )
 
 func AddRoutes(router *mux.Router) *mux.Router {
@@ -55,7 +56,7 @@ func executeJob(w http.ResponseWriter, r *http.Request) {
 }
 
 func getJobLogs(w http.ResponseWriter, r *http.Request) {
-	logger.GetLogger().Debug("Called executeJob")
+	logger.GetLogger().Debug("Called getJobLogs")
 	vars := mux.Vars(r)
 
 	content, err := engine.GetLogs(vars["name"], vars["version"])

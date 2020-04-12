@@ -1,6 +1,3 @@
 #IDEs
-.vscode
+#.vscode
 .idea
-
-#Vendor
-vendor

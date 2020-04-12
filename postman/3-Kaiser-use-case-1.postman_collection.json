@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1a95e05a-7150-467c-b45d-ca154abda5c3",
+		"_postman_id": "16001466-f990-4e8f-8b94-a38e89b8d648",
 		"name": "Kaiser use case 1",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -24,113 +24,115 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
-					"raw": "localhost:8000/v1/health",
+					"raw": "localhost:8000/kaiser/v1/health",
 					"host": [
 						"localhost"
 					],
 					"port": "8000",
 					"path": [
+						"kaiser",
 						"v1",
 						"health"
 					]
 				}
 			},
 			"response": []
-        },
-      {
-        "name": "Execute Job",
-        "event": [
-          {
-            "listen": "test",
-            "script": {
-              "id": "ae7d461f-e05a-406f-90e6-d1aa199c432f",
-              "exec": [
-                ""
-              ],
-              "type": "text/javascript"
-            }
-          }
-        ],
-        "request": {
-          "method": "POST",
-          "header": [
-            {
-              "key": "Content-Type",
-              "name": "Content-Type",
-              "value": "application/json",
-              "type": "text"
-            }
-          ],
-          "body": {
-            "mode": "raw",
-            "raw": "{}"
-          },
-          "url": {
-            "raw": "localhost:8000/v1/jobs/HelloWorldJob/1.0",
-            "host": [
-              "localhost"
-            ],
-            "port": "8000",
-            "path": [
-              "v1",
-              "jobs",
-              "HelloWorldJob",
-              "1.0"
-            ]
-          }
-        },
-        "response": []
-      },
-      {
-        "name": "Get Log generated",
-        "request": {
-          "method": "GET",
-          "header": [],
-          "body": {
-            "mode": "raw",
-            "raw": ""
-          },
-          "url": {
-            "raw": ""
-          }
-        },
-        "response": []
-      },
-      {
-        "name": "Get job logs from elasticsearch",
-        "request": {
-          "method": "GET",
-          "header": [],
-          "body": {
-            "mode": "raw",
-            "raw": ""
-          },
-          "url": {
-            "raw": "localhost:8000/query/v1/search/logs?query=successlogtask",
-            "host": [
-              "localhost"
-            ],
-            "port": "8000",
-            "path": [
-              "query",
-              "v1",
-              "search",
-              "logs"
-            ],
-            "query": [
-              {
-                "key": "query",
-                "value": "successlogtask"
-              }
-            ]
-          }
-        },
-        "response": []
+		},
+		{
+			"name": "Execute Job",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ae7d461f-e05a-406f-90e6-d1aa199c432f",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "localhost:8000/kaiser/v1/jobs/HelloWorldJob/1.0",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"kaiser",
+						"v1",
+						"jobs",
+						"HelloWorldJob",
+						"1.0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Log generated",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/kaiser/v1/jobs/HelloWorldJob/1.0",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"kaiser",
+						"v1",
+						"jobs",
+						"HelloWorldJob",
+						"1.0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get job logs from elasticsearch",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/query/v1/search/logs?query=successlogtask",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"query",
+						"v1",
+						"search",
+						"logs"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "successlogtask"
+						}
+					]
+				}
+			},
+			"response": []
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }

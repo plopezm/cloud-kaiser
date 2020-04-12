@@ -10,7 +10,7 @@ import (
 )
 
 var threadFinishedChannel = make(chan Runnable)
-var mutex = &sync.Mutex{}
+var mutex = sync.Mutex{}
 var executions = make(map[string]interface{})
 
 func Start() {
