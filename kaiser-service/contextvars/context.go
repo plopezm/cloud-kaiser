@@ -9,5 +9,6 @@ const (
 )
 
 const (
+	//DefaultLogFolder Cointains the default name of the log folder used by kaiser-service
 	DefaultLogFolder = "logs"
 )
