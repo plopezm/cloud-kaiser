@@ -13,4 +13,5 @@ RUN go install ./...
 
 FROM alpine:3.11
 WORKDIR /usr/bin
+RUN mkdir -p /usr/bin/logs && chmod -R a+rwx /usr/bin/logs
 COPY --from=build /go/bin .

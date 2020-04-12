@@ -9,5 +9,5 @@ const (
 )
 
 const (
-	DefaultLogFolder = "kaiser-logs"
+	DefaultLogFolder = "logs"
 )

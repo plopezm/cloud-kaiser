@@ -11,11 +11,11 @@
             "mode": "auto",
             "program": "${workspaceFolder}/kaiser-service/",
             "env": {
-                "POSTGRES_ADDR": "postgres",
+                "POSTGRES_ADDR": "localhost",
                 "POSTGRES_DB": "kaiserdb",
                 "POSTGRES_USER": "postgres",
                 "POSTGRES_PASSWORD": "postgres",
-                "NATS_ADDRESS": "nats:4222",
+                "NATS_ADDRESS": "localhost:4222",
                 "LOG_LEVEL": "DEBUG",
                 "SERVICE_PORT": "8080"
             }
