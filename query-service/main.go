@@ -16,6 +16,7 @@ import (
 	"github.com/tinrab/retry"
 )
 
+//Config The configuration used by this service
 type Config struct {
 	PostgresDB           string `envconfig:"POSTGRES_DB"`
 	PostgresUser         string `envconfig:"POSTGRES_USER"`

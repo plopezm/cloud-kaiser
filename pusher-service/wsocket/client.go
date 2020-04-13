@@ -2,16 +2,19 @@ package wsocket
 
 import (
 	"encoding/json"
+
 	"github.com/gorilla/websocket"
 	"github.com/plopezm/cloud-kaiser/core/logger"
 )
 
+//Client Represents a Web socket client
 type Client struct {
 	id     string
 	socket *websocket.Conn
 	send   chan []byte
 }
 
+//Message a web socket received message
 type Message struct {
 	Sender    string `json:"sender,omitempty"`
 	Recipient string `json:"recipient,omitempty"`

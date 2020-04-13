@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
 	"github.com/plopezm/cloud-kaiser/core/db"
@@ -14,10 +17,9 @@ import (
 	_ "github.com/plopezm/cloud-kaiser/kaiser-service/plugins/logger"
 	_ "github.com/plopezm/cloud-kaiser/kaiser-service/plugins/system"
 	"github.com/tinrab/retry"
-	"os"
-	"time"
 )
 
+//Config Contains the service configuration
 type Config struct {
 	PostgresAddress  string `envconfig:"POSTGRES_ADDR"`
 	PostgresDB       string `envconfig:"POSTGRES_DB"`

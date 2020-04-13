@@ -3,12 +3,14 @@ package wsocket
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/gorilla/websocket"
 	"github.com/plopezm/cloud-kaiser/core/logger"
-	"github.com/satori/go.uuid"
-	"net/http"
+	uuid "github.com/satori/go.uuid"
 )
 
+//ClientManager Manages all web socket clients
 type ClientManager struct {
 	clients    map[*Client]bool
 	broadcast  chan []byte
@@ -23,6 +25,7 @@ var manager = ClientManager{
 	clients:    make(map[*Client]bool),
 }
 
+//Start Initializes web socket manager
 func Start() {
 	var log = logger.GetLogger()
 	for {
@@ -49,6 +52,7 @@ func Start() {
 	}
 }
 
+//Broadcast Sends a bcast message
 func Broadcast(message interface{}, ignore *Client) {
 	data, _ := json.Marshal(message)
 	for conn := range manager.clients {
@@ -58,6 +62,7 @@ func Broadcast(message interface{}, ignore *Client) {
 	}
 }
 
+//WsPage Creates a new client for this web socket
 func WsPage(res http.ResponseWriter, req *http.Request) {
 	conn, error := (&websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}).Upgrade(res, req, nil)
 	if error != nil {

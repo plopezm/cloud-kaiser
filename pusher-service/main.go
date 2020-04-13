@@ -18,6 +18,7 @@ import (
 	"github.com/tinrab/retry"
 )
 
+//Config Represents the service configuration
 type Config struct {
 	NatsAddress          string `envconfig:"NATS_ADDRESS"`
 	ElasticSearchAddress string `envconfig:"ELASTICSEARCH_ADDRESS"`

@@ -1,19 +1,21 @@
 package v1
 
 import (
+	"log"
+	"net/http"
+	"strconv"
+	"strings"
+
 	"github.com/gorilla/mux"
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/search"
 	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/core/util"
-	"log"
-	"net/http"
-	"strconv"
-	"strings"
 )
 
 const handlersPrefix = "/v1"
 
+//NewRouter Creates a new mux router with paths
 func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
 	router.HandleFunc(handlersPrefix+"/search/tasks", searchTasks).

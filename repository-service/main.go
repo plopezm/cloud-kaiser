@@ -2,18 +2,20 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/types"
-	"github.com/plopezm/cloud-kaiser/repository-service/v1"
+	v1 "github.com/plopezm/cloud-kaiser/repository-service/v1"
 	"github.com/tinrab/retry"
-	"log"
-	"net/http"
-	"time"
 )
 
+//Config The service configuration
 type Config struct {
 	PostgresDB       string `envconfig:"POSTGRES_DB"`
 	PostgresUser     string `envconfig:"POSTGRES_USER"`

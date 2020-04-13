@@ -2,17 +2,19 @@ package v1
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/core/util"
-	"log"
-	"net/http"
 )
 
 const handlersPrefix = "/v1"
 
+//NewRouter Creates a new router instance with the defined routes
 func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
 	router.HandleFunc(handlersPrefix+"/tasks", createTaskHandler).
