@@ -9,7 +9,7 @@ services:
     ports:
       - "80:80"
   postgres:
-    build: "./postgres"
+    build: "./devops/postgres"
     restart: "always"
     environment:
       POSTGRES_DB: "kaiserdb"
@@ -103,7 +103,7 @@ services:
       LOG_LEVEL: "DEBUG"
       SERVICE_PORT: "8080"
   load-balancer:
-    build: "./nginx"
+    build: "./devops/nginx"
     deploy:
       restart_policy:
         condition: on-failure

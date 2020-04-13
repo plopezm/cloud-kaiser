@@ -2,16 +2,18 @@ package main
 
 import (
 	"fmt"
-	"github.com/kelseyhightower/envconfig"
-	_ "github.com/lib/pq"
-	"github.com/plopezm/cloud-kaiser/core/db"
-	"github.com/plopezm/cloud-kaiser/core/search"
-	"github.com/plopezm/cloud-kaiser/core/types"
-	"github.com/plopezm/cloud-kaiser/query-service/v1"
-	"github.com/tinrab/retry"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/kelseyhightower/envconfig"
+	_ "github.com/lib/pq"
+	"github.com/plopezm/cloud-kaiser/core/db"
+	"github.com/plopezm/cloud-kaiser/core/logger"
+	"github.com/plopezm/cloud-kaiser/core/search"
+	"github.com/plopezm/cloud-kaiser/core/types"
+	v1 "github.com/plopezm/cloud-kaiser/query-service/v1"
+	"github.com/tinrab/retry"
 )
 
 type Config struct {
@@ -19,6 +21,7 @@ type Config struct {
 	PostgresUser         string `envconfig:"POSTGRES_USER"`
 	PostgresPassword     string `envconfig:"POSTGRES_PASSWORD"`
 	ElasticSearchAddress string `envconfig:"ELASTICSEARCH_ADDRESS"`
+	LogLevel             string `envconfig:"LOG_LEVEL"`
 }
 
 func main() {
@@ -29,6 +32,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	logger.InitializeLogger(config.LogLevel)
 	types.RegisterCoreTypes()
 
 	// Connect to PostgreSQL and inject the repository. The code below retries connection every 2 seconds
@@ -51,6 +55,7 @@ func main() {
 			log.Println(err)
 			return err
 		}
+		logger.GetLogger().Info("ElasticSearch connected!")
 		search.SetRepository(es)
 		return nil
 	})

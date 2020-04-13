@@ -3,6 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"net/http"
+	"reflect"
+	"time"
+
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
 	"github.com/plopezm/cloud-kaiser/core/event"
@@ -11,10 +16,6 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/pusher-service/wsocket"
 	"github.com/tinrab/retry"
-	"log"
-	"net/http"
-	"reflect"
-	"time"
 )
 
 type Config struct {
@@ -42,6 +43,7 @@ func main() {
 			log.Println(err)
 			return err
 		}
+		logger.GetLogger().Info("ElasticSearch connected!")
 		search.SetRepository(es)
 		return nil
 	})
@@ -77,7 +79,7 @@ func main() {
 	// Run WebSocket server
 	go wsocket.Start()
 	http.HandleFunc("/ws/", wsocket.WsPage)
-	logger.GetLogger().Debug("Starting service: pusher-service on port ", config.ServicePort)
+	logger.GetLogger().Debug("Starting service: pusher-service on port %d", config.ServicePort)
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", config.ServicePort), nil); err != nil {
 		logger.GetLogger().Fatal(err)
 	}
