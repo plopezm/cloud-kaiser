@@ -144,7 +144,7 @@ func (r *PostgresRepository) FindTaskByNameAndVersion(ctx context.Context, name 
 }
 
 func (r *PostgresRepository) InsertJob(ctx context.Context, job *types.Job) error {
-	return r.Tx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted}, func(tx *sql.Tx) error {
+	return r.Tx(ctx, &sql.TxOptions{Isolation: sql.LevelReadUncommitted}, func(tx *sql.Tx) error {
 		// Insert job and tasks relations
 		if err := r.createJobInTx(ctx, tx, job); err != nil {
 			return err
