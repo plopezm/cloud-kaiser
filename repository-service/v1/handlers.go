@@ -77,6 +77,7 @@ func createJobHandler(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&job)
 	if err != nil {
 		util.ResponseError(w, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	if err := db.InsertJob(ctx, &job); err != nil {

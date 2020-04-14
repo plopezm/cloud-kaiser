@@ -35,10 +35,18 @@ func (r *PostgresRepository) Close() {
 }
 
 func (r *PostgresRepository) Tx(ctx context.Context, opts *sql.TxOptions, txF TransactionFunction) error {
-	tx, err := r.db.BeginTx(ctx, opts)
-	if err != nil {
-		return err
+	var tx *sql.Tx
+	var err error
+	var ok bool
+
+	tx, ok = ctx.Value("tx").(*sql.Tx)
+	if tx == nil || !ok {
+		tx, err = r.db.BeginTx(ctx, opts)
+		if err != nil {
+			return err
+		}
 	}
+
 	err = txF(tx)
 	if err != nil {
 		if err := tx.Rollback(); err != nil {
@@ -136,35 +144,22 @@ func (r *PostgresRepository) FindTaskByNameAndVersion(ctx context.Context, name 
 }
 
 func (r *PostgresRepository) InsertJob(ctx context.Context, job *types.Job) error {
-	var err error
-	var contextWithTx context.Context
-	tx, ok := ctx.Value("tx").(*sql.Tx)
-	if tx == nil || !ok {
-		tx, err = r.db.Begin()
-		if err != nil {
+	return r.Tx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted}, func(tx *sql.Tx) error {
+		// Insert job and tasks relations
+		if err := r.createJobInTx(ctx, tx, job); err != nil {
 			return err
 		}
-		contextWithTx = context.WithValue(ctx, "tx", tx)
-	} else {
-		contextWithTx = ctx
-	}
 
-	// Insert job and tasks relations
-	if err := r.createJobInTx(ctx, tx, job); err != nil {
-		return err
-	}
-
-	//Insert arguments
-	for _, jobArg := range job.Parameters {
-		// if someone fails the argument is not added but the job insertion does not fail
-		err := r.AddJobArgument(contextWithTx, job, jobArg)
-		if err != nil {
-			log.Println("Error creating argument", err)
+		//Insert arguments
+		for _, jobArg := range job.Parameters {
+			// if someone fails the argument is not added but the job insertion does not fail
+			err := r.AddJobArgument(ctx, job, jobArg)
+			if err != nil {
+				log.Println("Error creating argument", err)
+			}
 		}
-	}
-
-	tx.Commit()
-	return nil
+		return nil
+	})
 }
 
 func (r *PostgresRepository) createJobInTx(ctx context.Context, tx *sql.Tx, job *types.Job) error {

@@ -48,8 +48,8 @@ CREATE TABLE jobs_tasks (
   PRIMARY KEY (job_name, job_version, task_name, task_version),
   FOREIGN KEY (job_name, job_version) REFERENCES jobs(name, version),
   FOREIGN KEY (task_name, task_version) REFERENCES tasks(name, version),
-  FOREIGN KEY (job_name, job_version, on_success_name, on_success_version) REFERENCES jobs_tasks(job_name, job_version, task_name, task_version),
-  FOREIGN KEY (job_name, job_version, on_failure_name, on_failure_version) REFERENCES jobs_tasks(job_name, job_version, task_name, task_version)
+  FOREIGN KEY (on_success_name, on_success_version) REFERENCES tasks(name, version),
+  FOREIGN KEY (on_failure_name, on_failure_version) REFERENCES tasks(name, version)
 );
 
 
