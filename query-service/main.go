@@ -23,6 +23,7 @@ type Config struct {
 	PostgresPassword     string `envconfig:"POSTGRES_PASSWORD"`
 	ElasticSearchAddress string `envconfig:"ELASTICSEARCH_ADDRESS"`
 	LogLevel             string `envconfig:"LOG_LEVEL"`
+	PostgresAddr         string `envconfig:"POSTGRES_ADDR"`
 }
 
 func main() {
@@ -38,7 +39,7 @@ func main() {
 
 	// Connect to PostgreSQL and inject the repository. The code below retries connection every 2 seconds
 	retry.ForeverSleep(2*time.Second, func(attempt int) error {
-		addr := fmt.Sprintf("postgres://%s:%s@postgres/%s?sslmode=disable", config.PostgresUser, config.PostgresPassword, config.PostgresDB)
+		addr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", config.PostgresUser, config.PostgresPassword, config.PostgresAddr, config.PostgresDB)
 		repo, err := db.NewPostgres(addr)
 		if err != nil {
 			log.Println(err)

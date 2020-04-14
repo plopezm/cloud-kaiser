@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/core/util"
+	"golang.org/x/net/context"
 )
 
 const handlersPrefix = "/v1"
@@ -33,18 +35,28 @@ func createTaskHandler(w http.ResponseWriter, r *http.Request) {
 		util.ResponseError(w, http.StatusBadRequest, err.Error())
 	}
 
-	if err := db.InsertTask(ctx, task); err != nil {
+	if err := db.Tx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted}, func(tx *sql.Tx) error {
+		ctxWithTX := context.WithValue(ctx, "tx", tx)
+
+		if err := db.InsertTask(ctxWithTX, task); err != nil {
+			log.Println(err)
+			util.ResponseError(w, http.StatusBadRequest, "Create task error: "+err.Error())
+			return err
+		}
+
+		// Publish event
+		if err := event.PublishEvent(event.TaskCreated, task); err != nil {
+			log.Println(err)
+			util.ResponseError(w, http.StatusBadRequest, "Create task error: "+err.Error())
+			return err
+		}
+		return nil
+	}); err != nil {
 		log.Println(err)
-		util.ResponseError(w, http.StatusBadRequest, "Create task error: "+err.Error())
+		util.ResponseError(w, http.StatusBadRequest, "Create task transaction error: "+err.Error())
 		return
 	}
 
-	// Publish event
-	if err := event.PublishEvent(event.TaskCreated, task); err != nil {
-		log.Println(err)
-		util.ResponseError(w, http.StatusBadRequest, "Create task error: "+err.Error())
-		return
-	}
 	if err := event.PublishEvent(event.NotifyUI, event.UINotification{
 		Type:    event.UITaskCreated,
 		Content: task,

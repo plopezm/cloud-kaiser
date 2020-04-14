@@ -19,6 +19,39 @@
                 "LOG_LEVEL": "DEBUG",
                 "SERVICE_PORT": "8080"
             }
+        },
+		{
+            "name": "Debug Repository service",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/repository-service/",
+            "env": {
+                "POSTGRES_ADDR": "localhost",
+                "POSTGRES_DB": "kaiserdb",
+                "POSTGRES_USER": "postgres",
+                "POSTGRES_PASSWORD": "postgres",
+                "NATS_ADDRESS": "localhost:4222",
+                "LOG_LEVEL": "DEBUG",
+                "SERVICE_PORT": "8080"
+            }
+        },
+		{
+            "name": "Debug Query service",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/query-service/",
+            "env": {
+                "POSTGRES_ADDR": "localhost",
+                "POSTGRES_DB": "kaiserdb",
+                "POSTGRES_USER": "postgres",
+                "POSTGRES_PASSWORD": "postgres",
+                "NATS_ADDRESS": "localhost:4222",
+                "LOG_LEVEL": "DEBUG",
+                "SERVICE_PORT": "8080",
+                "ELASTICSEARCH_ADDRESS": "localhost:9200",
+            }
         }
     ]
 }
