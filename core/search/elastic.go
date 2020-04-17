@@ -86,18 +86,15 @@ func (r *ElasticSearchRepository) FindLogs(ctx context.Context, query string, of
 		Index("logs").
 		Query(
 			elastic.NewBoolQuery().Must(
-				elastic.NewBoolQuery().Must(
-					elastic.NewBoolQuery().
-						MinimumShouldMatch("1").
-						Should(
-							elastic.NewMultiMatchQuery(query, initialFields...).
-								Type("cross_fields").
-								Operator("and"),
-							elastic.NewMultiMatchQuery(query, initialFields...).
-								Type("phrase_prefix").
-								Operator("and"),
-						),
-				),
+				elastic.NewBoolQuery().MinimumShouldMatch("1").
+					Should(
+						elastic.NewMultiMatchQuery(query, initialFields...).
+							Type("cross_fields").
+							Operator("and"),
+						elastic.NewMultiMatchQuery(query, initialFields...).
+							Type("phrase_prefix").
+							Operator("and"),
+					),
 			),
 		).
 		Highlight(
