@@ -39,7 +39,7 @@ func (r *PostgresRepository) Tx(ctx context.Context, opts *sql.TxOptions, txF Tr
 	var err error
 	var ok bool
 
-	tx, ok = ctx.Value("tx").(*sql.Tx)
+	tx, ok = ctx.Value(ContextTX).(*sql.Tx)
 	if tx == nil || !ok {
 		tx, err = r.db.BeginTx(ctx, opts)
 		if err != nil {
@@ -59,7 +59,7 @@ func (r *PostgresRepository) Tx(ctx context.Context, opts *sql.TxOptions, txF Tr
 
 func (r *PostgresRepository) InsertTask(ctx context.Context, task types.Task) error {
 	var dbm DBManager
-	tx, ok := ctx.Value("tx").(*sql.Tx)
+	tx, ok := ctx.Value(ContextTX).(*sql.Tx)
 	if tx != nil && ok {
 		dbm = tx
 	} else {
@@ -237,7 +237,7 @@ func (r *PostgresRepository) AddJobArgument(ctx context.Context, job *types.Job,
 	}
 
 	var dbm DBManager
-	tx, ok := ctx.Value("tx").(*sql.Tx)
+	tx, ok := ctx.Value(ContextTX).(*sql.Tx)
 	if tx != nil && ok {
 		dbm = tx
 	} else {

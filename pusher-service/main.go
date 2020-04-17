@@ -96,7 +96,8 @@ func onEventReceived(packet event.Envelope) {
 		logger.GetLogger().Debug(fmt.Sprintf("Event %s processed", packet.Subject))
 	case event.TaskExecutionLog:
 		taskExecutionLog := packet.Content.(types.TaskExecutionLog)
-		err := search.InsertLog(context.Background(), taskExecutionLog.JobName, taskExecutionLog.JobVersion, taskExecutionLog.TaskName, taskExecutionLog.TaskVersion, taskExecutionLog.Line)
+		taskExecutionLog.Ts = time.Now().UnixNano()
+		err := search.InsertLog(context.Background(), taskExecutionLog)
 		if err != nil {
 			logger.GetLogger().Error("Error sending message to Elasticsearch: " + err.Error())
 		}

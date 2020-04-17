@@ -4,7 +4,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/plopezm/cloud-kaiser/core/db"
@@ -47,12 +46,11 @@ func searchLogs(w http.ResponseWriter, r *http.Request) {
 		util.ResponseError(w, http.StatusBadRequest, "Missing 'query' parameter")
 		return
 	}
-	fieldsString := r.FormValue("fields")
-	if len(fieldsString) == 0 {
+	field := r.FormValue("field")
+	if len(field) == 0 {
 		util.ResponseError(w, http.StatusBadRequest, "Missing 'fields' parameter")
 		return
 	}
-	fields := strings.Split(fieldsString, ",")
 
 	offset := uint64(0)
 	offsetStr := r.FormValue("offset")
@@ -74,7 +72,7 @@ func searchLogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Search logs
-	logs, err := search.FindLogs(ctx, query, fields, offset, limit)
+	logs, err := search.FindLogs(ctx, query, field, offset, limit)
 	if err != nil {
 		log.Println(err)
 		util.ResponseOk(w, []types.JobTask{})

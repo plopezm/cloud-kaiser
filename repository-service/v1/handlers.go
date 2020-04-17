@@ -36,18 +36,16 @@ func createTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := db.Tx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted}, func(tx *sql.Tx) error {
-		ctxWithTX := context.WithValue(ctx, "tx", tx)
+		ctxWithTX := context.WithValue(ctx, db.ContextTX, tx)
 
 		if err := db.InsertTask(ctxWithTX, task); err != nil {
 			log.Println(err)
-			util.ResponseError(w, http.StatusBadRequest, "Create task error: "+err.Error())
 			return err
 		}
 
 		// Publish event
 		if err := event.PublishEvent(event.TaskCreated, task); err != nil {
 			log.Println(err)
-			util.ResponseError(w, http.StatusBadRequest, "Create task error: "+err.Error())
 			return err
 		}
 		return nil

@@ -7,6 +7,11 @@ import (
 	"github.com/plopezm/cloud-kaiser/core/types"
 )
 
+const (
+	//ContextTX The transaction key for the context
+	ContextTX = "tx"
+)
+
 //TransactionFunction The action to complete in order to commit a transaction successfuly
 type TransactionFunction func(*sql.Tx) error
 

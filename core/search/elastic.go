@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/olivere/elastic"
+	"log"
+
+	elastic "github.com/olivere/elastic/v7"
 	"github.com/plopezm/cloud-kaiser/core/logger"
 	"github.com/plopezm/cloud-kaiser/core/types"
-	"log"
-	"time"
 )
 
 type ElasticSearchRepository struct {
@@ -43,10 +43,7 @@ func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, o
 	result, err := r.client.Search().
 		Index("tasks").
 		Query(
-			elastic.NewMultiMatchQuery(query, "name").
-				Fuzziness("3").
-				PrefixLength(1).
-				CutoffFrequency(0.0001),
+			elastic.NewWildcardQuery("name", query),
 		).
 		From(int(offset)).
 		Size(int(limit)).
@@ -57,7 +54,7 @@ func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, o
 	tasks := []types.Task{}
 	for _, hit := range result.Hits.Hits {
 		var task types.Task
-		if err = json.Unmarshal(*hit.Source, &task); err != nil {
+		if err = json.Unmarshal(hit.Source, &task); err != nil {
 			log.Println(err)
 		}
 		tasks = append(tasks, task)
@@ -65,43 +62,60 @@ func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, o
 	return tasks, nil
 }
 
-func (r *ElasticSearchRepository) InsertLog(ctx context.Context, jobname string, jobversion string, taskname string, taskversion string, logline string) error {
+func (r *ElasticSearchRepository) InsertLog(ctx context.Context, taskExecutionLog types.TaskExecutionLog) error {
 	_, err := r.client.Index().
 		Index("logs").
-		Type("joblog").
-		Id(fmt.Sprintf("%s:%s:%s:%s:%d", jobname, jobversion, taskname, taskversion, time.Now().UnixNano())).
-		BodyJson(map[string]interface{}{
-			"job":         jobname,
-			"jobVersion":  jobversion,
-			"task":        taskname,
-			"taskVersion": taskversion,
-			"msg":         logline,
-			"ts":          time.Now().UnixNano(),
-		}).
+		Type("JobLog").
+		Id(fmt.Sprintf("%s:%s:%s:%s:%d", taskExecutionLog.JobName, taskExecutionLog.JobVersion,
+			taskExecutionLog.TaskName, taskExecutionLog.TaskVersion,
+			taskExecutionLog.Ts)).
+		BodyJson(taskExecutionLog).
 		Refresh("wait_for").
 		Do(ctx)
 	return err
 }
 
-func (r *ElasticSearchRepository) FindLogs(ctx context.Context, query string, fields []string, offset uint64, limit uint64) ([]interface{}, error) {
+func (r *ElasticSearchRepository) FindLogs(ctx context.Context, query string, field string, offset uint64, limit uint64) ([]types.TaskExecutionLog, error) {
+	initialFields := []string{"jobName", "jobVersion", "taskName", "taskVersion", "line"}
+
+	highlightFields := make([]*elastic.HighlighterField, 0)
+	for _, field := range initialFields {
+		highlightFields = append(highlightFields, elastic.NewHighlighterField(field))
+	}
 	result, err := r.client.Search().
 		Index("logs").
 		Query(
-			elastic.NewMultiMatchQuery(query, fields...).
-				Fuzziness("3").
-				PrefixLength(1).
-				CutoffFrequency(0.0001),
+			elastic.NewBoolQuery().Must(
+				elastic.NewBoolQuery().Must(
+					elastic.NewBoolQuery().
+						MinimumShouldMatch("1").
+						Should(
+							elastic.NewMultiMatchQuery(query, initialFields...).
+								Type("cross_fields").
+								Operator("and"),
+							elastic.NewMultiMatchQuery(query, initialFields...).
+								Type("phrase_prefix").
+								Operator("and"),
+						),
+				),
+			),
 		).
+		Highlight(
+			elastic.NewHighlight().Fields(
+				highlightFields...,
+			),
+		).
+		TrackScores(true).
 		From(int(offset)).
 		Size(int(limit)).
 		Do(ctx)
 	if err != nil {
 		return nil, err
 	}
-	logs := make([]interface{}, 0)
+	logs := make([]types.TaskExecutionLog, 0)
 	for _, hit := range result.Hits.Hits {
-		var log interface{}
-		if err = json.Unmarshal(*hit.Source, &log); err != nil {
+		var log types.TaskExecutionLog
+		if err = json.Unmarshal(hit.Source, &log); err != nil {
 			logger.GetLogger().Error(err.Error())
 		}
 		logs = append(logs, log)

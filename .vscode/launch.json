@@ -52,6 +52,23 @@
                 "SERVICE_PORT": "8080",
                 "ELASTICSEARCH_ADDRESS": "localhost:9200",
             }
+        },
+		{
+            "name": "Debug Pusher service",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/pusher-service/",
+            "env": {
+                "POSTGRES_ADDR": "localhost",
+                "POSTGRES_DB": "kaiserdb",
+                "POSTGRES_USER": "postgres",
+                "POSTGRES_PASSWORD": "postgres",
+                "NATS_ADDRESS": "localhost:4222",
+                "LOG_LEVEL": "DEBUG",
+                "SERVICE_PORT": "8080",
+                "ELASTICSEARCH_ADDRESS": "localhost:9200",
+            }
         }
     ]
 }

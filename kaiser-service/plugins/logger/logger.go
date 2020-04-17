@@ -2,13 +2,14 @@ package logger
 
 import (
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/contextvars"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
 	"github.com/robertkrimen/otto"
-	"log"
-	"os"
 )
 
 func init() {
@@ -49,6 +50,7 @@ func Info(call otto.FunctionCall) otto.Value {
 			JobVersion:  jobVersion.String(),
 			TaskName:    taskName.String(),
 			TaskVersion: taskVersion.String(),
+			Line:        logline,
 		})
 	}
 	return otto.Value{}

@@ -6,4 +6,5 @@ type TaskExecutionLog struct {
 	TaskName    string `json:"taskName"`
 	TaskVersion string `json:"taskVersion"`
 	Line        string `json:"line"`
+	Ts          int64  `json:"ts"`
 }

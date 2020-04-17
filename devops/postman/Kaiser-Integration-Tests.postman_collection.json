@@ -321,7 +321,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/query/v1/search/tasks?query=successlogtask",
+					"raw": "localhost:8000/query/v1/search/tasks?query=succ*",
 					"host": [
 						"localhost"
 					],
@@ -335,7 +335,7 @@
 					"query": [
 						{
 							"key": "query",
-							"value": "successlogtask"
+							"value": "succ*"
 						}
 					]
 				}
@@ -624,7 +624,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/query/v1/search/logs?query=successlogtask",
+					"raw": "localhost:8000/query/v1/search/logs?query=Hello&field=jobName",
 					"host": [
 						"localhost"
 					],
@@ -638,7 +638,11 @@
 					"query": [
 						{
 							"key": "query",
-							"value": "successlogtask"
+							"value": "Hello"
+						},
+						{
+							"key": "field",
+							"value": "jobName"
 						}
 					]
 				}

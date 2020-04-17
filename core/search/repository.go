@@ -2,6 +2,7 @@ package search
 
 import (
 	"context"
+
 	"github.com/plopezm/cloud-kaiser/core/types"
 )
 
@@ -9,8 +10,8 @@ type Repository interface {
 	Close()
 	InsertTask(ctx context.Context, job types.Task) error
 	FindTasks(ctx context.Context, query string, page uint64, limit uint64) ([]types.Task, error)
-	InsertLog(ctx context.Context, jobname string, jobversion string, taskname string, taskversion string, logline string) error
-	FindLogs(ctx context.Context, query string, fields []string, offset uint64, limit uint64) ([]interface{}, error)
+	InsertLog(ctx context.Context, taskExecutionLog types.TaskExecutionLog) error
+	FindLogs(ctx context.Context, query string, field string, offset uint64, limit uint64) ([]types.TaskExecutionLog, error)
 }
 
 var impl Repository
@@ -35,10 +36,10 @@ func FindTasks(ctx context.Context, query string, offset uint64, limit uint64) (
 	return impl.FindTasks(ctx, query, offset, limit)
 }
 
-func InsertLog(ctx context.Context, jobname string, jobversion string, taskname string, taskversion string, logline string) error {
-	return impl.InsertLog(ctx, jobname, jobversion, taskname, taskversion, logline)
+func InsertLog(ctx context.Context, taskExecutionLog types.TaskExecutionLog) error {
+	return impl.InsertLog(ctx, taskExecutionLog)
 }
 
-func FindLogs(ctx context.Context, query string, fields []string, offset uint64, limit uint64) ([]interface{}, error) {
-	return impl.FindLogs(ctx, query, fields, offset, limit)
+func FindLogs(ctx context.Context, query string, field string, offset uint64, limit uint64) ([]types.TaskExecutionLog, error) {
+	return impl.FindLogs(ctx, query, field, offset, limit)
 }

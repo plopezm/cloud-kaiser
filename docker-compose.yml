@@ -25,9 +25,10 @@ services:
     ports: 
     - "4222:4222"
   elasticsearch:
-    image: "docker.elastic.co/elasticsearch/elasticsearch:6.2.3"
+    image: "elasticsearch:7.6.2"
     ports: 
     - "9200:9200"
+    - "9300:9300"
     volumes:
       - dataelasticsearch:/usr/share/elasticsearch/data
     environment:
@@ -38,7 +39,20 @@ services:
       - cluster.name=elasticsearch
       - bootstrap.memory_lock=true
       - discovery.type=single-node
+      - http.cors.enabled=true
+      - http.cors.allow-origin=http://localhost:1358,http://127.0.0.1:1358
+      - http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization
+      - http.cors.allow-credentials=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile: 65536
+  elasticsearch-ui:
+    image: "appbaseio/dejavu"
+    ports: 
+    - "1358:1358"    
     ulimits:
       memlock:
         soft: -1
