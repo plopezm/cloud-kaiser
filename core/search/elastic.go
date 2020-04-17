@@ -75,7 +75,7 @@ func (r *ElasticSearchRepository) InsertLog(ctx context.Context, taskExecutionLo
 	return err
 }
 
-func (r *ElasticSearchRepository) FindLogs(ctx context.Context, query string, field string, offset uint64, limit uint64) ([]types.TaskExecutionLog, error) {
+func (r *ElasticSearchRepository) FindLogs(ctx context.Context, query string, offset uint64, limit uint64) ([]types.TaskExecutionLog, error) {
 	initialFields := []string{"jobName", "jobVersion", "taskName", "taskVersion", "line"}
 
 	highlightFields := make([]*elastic.HighlighterField, 0)

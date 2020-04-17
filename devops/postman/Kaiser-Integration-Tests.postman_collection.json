@@ -624,7 +624,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/query/v1/search/logs?query=Hello&field=jobName",
+					"raw": "localhost:8000/query/v1/search/logs?query=Hello",
 					"host": [
 						"localhost"
 					],
@@ -639,10 +639,6 @@
 						{
 							"key": "query",
 							"value": "Hello"
-						},
-						{
-							"key": "field",
-							"value": "jobName"
 						}
 					]
 				}

@@ -11,7 +11,7 @@ type Repository interface {
 	InsertTask(ctx context.Context, job types.Task) error
 	FindTasks(ctx context.Context, query string, page uint64, limit uint64) ([]types.Task, error)
 	InsertLog(ctx context.Context, taskExecutionLog types.TaskExecutionLog) error
-	FindLogs(ctx context.Context, query string, field string, offset uint64, limit uint64) ([]types.TaskExecutionLog, error)
+	FindLogs(ctx context.Context, query string, offset uint64, limit uint64) ([]types.TaskExecutionLog, error)
 }
 
 var impl Repository
@@ -40,6 +40,6 @@ func InsertLog(ctx context.Context, taskExecutionLog types.TaskExecutionLog) err
 	return impl.InsertLog(ctx, taskExecutionLog)
 }
 
-func FindLogs(ctx context.Context, query string, field string, offset uint64, limit uint64) ([]types.TaskExecutionLog, error) {
-	return impl.FindLogs(ctx, query, field, offset, limit)
+func FindLogs(ctx context.Context, query string, offset uint64, limit uint64) ([]types.TaskExecutionLog, error) {
+	return impl.FindLogs(ctx, query, offset, limit)
 }
