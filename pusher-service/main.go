@@ -62,6 +62,11 @@ func main() {
 			logger.GetLogger().Error(err)
 			return err
 		}
+		err = messaging.OnQueuedEvent("pusher-service", event.JobCreated, reflect.TypeOf(types.Job{}), onEventReceived)
+		if err != nil {
+			logger.GetLogger().Error(err)
+			return err
+		}
 		err = messaging.OnQueuedEvent("pusher-service", event.TaskExecutionLog, reflect.TypeOf(types.TaskExecutionLog{}), onEventReceived)
 		if err != nil {
 			logger.GetLogger().Error(err)
@@ -100,6 +105,11 @@ func onEventReceived(packet event.Envelope) {
 		err := search.InsertLog(context.Background(), taskExecutionLog)
 		if err != nil {
 			logger.GetLogger().Error("Error sending message to Elasticsearch: " + err.Error())
+		}
+		logger.GetLogger().Debug(fmt.Sprintf("Event %s processed", packet.Subject))
+	case event.JobCreated:
+		if err := search.InsertJob(context.Background(), packet.Content.(types.Job)); err != nil {
+			logger.GetLogger().Error(fmt.Sprintf("Error in event %s: %s", event.JobCreated, err.Error()))
 		}
 		logger.GetLogger().Debug(fmt.Sprintf("Event %s processed", packet.Subject))
 	}

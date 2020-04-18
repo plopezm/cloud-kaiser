@@ -293,7 +293,7 @@
 			"response": []
 		},
 		{
-			"name": "Searching using elastic search",
+			"name": "Searching tasks using elastic search",
 			"event": [
 				{
 					"listen": "test",
@@ -512,6 +512,56 @@
 						"query",
 						"v1",
 						"jobs"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Searching jobs using elastic search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0d8ce467-00eb-4a4f-b61a-3beaee53499d",
+						"exec": [
+							"// example using pm.response.to.have",
+							"pm.test(\"response is ok\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"response contains an array of created tasks\", function () {",
+							"    pm.expect(jsonData).not.to.be.undefined;",
+							"    pm.expect(jsonData.length).to.equal(1);",
+							"    pm.expect(jsonData[0].name).to.equal(\"SuccessLogTask\");",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/query/v1/search/jobs?query=HelloWorldJob:1.0",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"query",
+						"v1",
+						"search",
+						"jobs"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "HelloWorldJob:1.0"
+						}
 					]
 				}
 			},

@@ -37,10 +37,10 @@ func (r *PostgresRepository) Close() {
 func (r *PostgresRepository) Tx(ctx context.Context, opts *sql.TxOptions, txF TransactionFunction) error {
 	var tx *sql.Tx
 	var err error
-	var ok bool
+	var theresTx bool
 
-	tx, ok = ctx.Value(ContextTX).(*sql.Tx)
-	if tx == nil || !ok {
+	tx, theresTx = ctx.Value(ContextTX).(*sql.Tx)
+	if tx == nil || !theresTx {
 		tx, err = r.db.BeginTx(ctx, opts)
 		if err != nil {
 			return err
@@ -48,6 +48,12 @@ func (r *PostgresRepository) Tx(ctx context.Context, opts *sql.TxOptions, txF Tr
 	}
 
 	err = txF(tx)
+
+	// Parent transaction will deal with it
+	if theresTx {
+		return err
+	}
+
 	if err != nil {
 		if err := tx.Rollback(); err != nil {
 			return err

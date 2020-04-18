@@ -78,9 +78,24 @@ func createJobHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := db.InsertJob(ctx, &job); err != nil {
+	if err := db.Tx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted}, func(tx *sql.Tx) error {
+		ctxWithTX := context.WithValue(ctx, db.ContextTX, tx)
+
+		if err := db.InsertJob(ctxWithTX, &job); err != nil {
+			log.Println(err)
+			return err
+		}
+
+		// Publish event
+		if err := event.PublishEvent(event.JobCreated, job); err != nil {
+			log.Println(err)
+			return err
+		}
+		return nil
+
+	}); err != nil {
 		log.Println(err)
-		util.ResponseError(w, http.StatusBadRequest, "Create job error: "+err.Error())
+		util.ResponseError(w, http.StatusBadRequest, "Create job transaction error: "+err.Error())
 		return
 	}
 

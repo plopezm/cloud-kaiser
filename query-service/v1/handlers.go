@@ -19,6 +19,8 @@ func NewRouter() (router *mux.Router) {
 	router = mux.NewRouter()
 	router.HandleFunc(handlersPrefix+"/search/tasks", searchTasks).
 		Methods("GET", "OPTIONS")
+	router.HandleFunc(handlersPrefix+"/search/jobs", searchJobs).
+		Methods("GET", "OPTIONS")
 	router.HandleFunc(handlersPrefix+"/search/logs", searchLogs).
 		Methods("GET", "OPTIONS")
 	router.HandleFunc(handlersPrefix+"/tasks", listTasksHandler).
@@ -108,6 +110,46 @@ func searchTasks(w http.ResponseWriter, r *http.Request) {
 
 	// Search tasks
 	tasks, err := search.FindTasks(ctx, query, offset, limit)
+	if err != nil {
+		log.Println(err)
+		util.ResponseOk(w, []types.JobTask{})
+		return
+	}
+
+	util.ResponseOk(w, tasks)
+}
+
+func searchJobs(w http.ResponseWriter, r *http.Request) {
+	var err error
+	ctx := r.Context()
+
+	// Read parameters
+	query := r.FormValue("query")
+	if len(query) == 0 {
+		util.ResponseError(w, http.StatusBadRequest, "Missing 'query' parameter")
+		return
+	}
+	offset := uint64(0)
+	offsetStr := r.FormValue("offset")
+	limit := uint64(100)
+	takeStr := r.FormValue("limit")
+	if len(offsetStr) != 0 {
+		offset, err = strconv.ParseUint(offsetStr, 10, 64)
+		if err != nil {
+			util.ResponseError(w, http.StatusBadRequest, "Invalid 'offset' parameter")
+			return
+		}
+	}
+	if len(takeStr) != 0 {
+		limit, err = strconv.ParseUint(takeStr, 10, 64)
+		if err != nil {
+			util.ResponseError(w, http.StatusBadRequest, "Invalid 'limit' parameter")
+			return
+		}
+	}
+
+	// Search tasks
+	tasks, err := search.FindJobs(ctx, query, offset, limit)
 	if err != nil {
 		log.Println(err)
 		util.ResponseOk(w, []types.JobTask{})

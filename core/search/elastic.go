@@ -81,6 +81,60 @@ func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, o
 	return tasks, nil
 }
 
+func (r *ElasticSearchRepository) InsertJob(ctx context.Context, job types.Job) error {
+	_, err := r.client.Index().
+		Index("jobs").
+		Type("Job").
+		Id(fmt.Sprintf("%s:%s", job.Name, job.Version)).
+		BodyJson(job).
+		Refresh("wait_for").
+		Do(ctx)
+	return err
+}
+
+func (r *ElasticSearchRepository) FindJobs(ctx context.Context, query string, offset uint64, limit uint64) ([]types.Job, error) {
+	initialFields := []string{"name", "version"}
+
+	highlightFields := make([]*elastic.HighlighterField, 0)
+	for _, field := range initialFields {
+		highlightFields = append(highlightFields, elastic.NewHighlighterField(field))
+	}
+	result, err := r.client.Search().
+		Index("jobs").
+		Query(
+			elastic.NewBoolQuery().MinimumShouldMatch("1").
+				Should(
+					elastic.NewMultiMatchQuery(query, initialFields...).
+						Type("cross_fields").
+						Operator("and"),
+					elastic.NewMultiMatchQuery(query, initialFields...).
+						Type("phrase_prefix").
+						Operator("and"),
+				),
+		).
+		Highlight(
+			elastic.NewHighlight().Fields(
+				highlightFields...,
+			),
+		).
+		TrackScores(true).
+		From(int(offset)).
+		Size(int(limit)).
+		Do(ctx)
+	if err != nil {
+		return nil, err
+	}
+	jobs := make([]types.Job, 0)
+	for _, hit := range result.Hits.Hits {
+		var job types.Job
+		if err = json.Unmarshal(hit.Source, &job); err != nil {
+			logger.GetLogger().Error(err.Error())
+		}
+		jobs = append(jobs, job)
+	}
+	return jobs, nil
+}
+
 func (r *ElasticSearchRepository) InsertLog(ctx context.Context, taskExecutionLog types.TaskExecutionLog) error {
 	_, err := r.client.Index().
 		Index("logs").
