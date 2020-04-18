@@ -321,7 +321,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "localhost:8000/query/v1/search/tasks?query=succ*",
+					"raw": "localhost:8000/query/v1/search/tasks?query=FailureLogTask:1.0",
 					"host": [
 						"localhost"
 					],
@@ -335,7 +335,7 @@
 					"query": [
 						{
 							"key": "query",
-							"value": "succ*"
+							"value": "FailureLogTask:1.0"
 						}
 					]
 				}

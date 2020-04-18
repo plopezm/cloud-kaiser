@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 
 	elastic "github.com/olivere/elastic/v7"
 	"github.com/plopezm/cloud-kaiser/core/logger"
@@ -40,22 +39,42 @@ func (r *ElasticSearchRepository) InsertTask(ctx context.Context, task types.Tas
 }
 
 func (r *ElasticSearchRepository) FindTasks(ctx context.Context, query string, offset uint64, limit uint64) ([]types.Task, error) {
+	initialFields := []string{"name", "version", "script"}
+
+	highlightFields := make([]*elastic.HighlighterField, 0)
+	for _, field := range initialFields {
+		highlightFields = append(highlightFields, elastic.NewHighlighterField(field))
+	}
 	result, err := r.client.Search().
 		Index("tasks").
 		Query(
-			elastic.NewWildcardQuery("name", query),
+			elastic.NewBoolQuery().MinimumShouldMatch("1").
+				Should(
+					elastic.NewMultiMatchQuery(query, initialFields...).
+						Type("cross_fields").
+						Operator("and"),
+					elastic.NewMultiMatchQuery(query, initialFields...).
+						Type("phrase_prefix").
+						Operator("and"),
+				),
 		).
+		Highlight(
+			elastic.NewHighlight().Fields(
+				highlightFields...,
+			),
+		).
+		TrackScores(true).
 		From(int(offset)).
 		Size(int(limit)).
 		Do(ctx)
 	if err != nil {
 		return nil, err
 	}
-	tasks := []types.Task{}
+	tasks := make([]types.Task, 0)
 	for _, hit := range result.Hits.Hits {
 		var task types.Task
 		if err = json.Unmarshal(hit.Source, &task); err != nil {
-			log.Println(err)
+			logger.GetLogger().Error(err.Error())
 		}
 		tasks = append(tasks, task)
 	}
@@ -68,7 +87,7 @@ func (r *ElasticSearchRepository) InsertLog(ctx context.Context, taskExecutionLo
 		Type("JobLog").
 		Id(fmt.Sprintf("%s:%s:%s:%s:%d", taskExecutionLog.JobName, taskExecutionLog.JobVersion,
 			taskExecutionLog.TaskName, taskExecutionLog.TaskVersion,
-			taskExecutionLog.Ts)).
+			taskExecutionLog.Ts.UnixNano())).
 		BodyJson(taskExecutionLog).
 		Refresh("wait_for").
 		Do(ctx)
@@ -85,17 +104,15 @@ func (r *ElasticSearchRepository) FindLogs(ctx context.Context, query string, of
 	result, err := r.client.Search().
 		Index("logs").
 		Query(
-			elastic.NewBoolQuery().Must(
-				elastic.NewBoolQuery().MinimumShouldMatch("1").
-					Should(
-						elastic.NewMultiMatchQuery(query, initialFields...).
-							Type("cross_fields").
-							Operator("and"),
-						elastic.NewMultiMatchQuery(query, initialFields...).
-							Type("phrase_prefix").
-							Operator("and"),
-					),
-			),
+			elastic.NewBoolQuery().MinimumShouldMatch("1").
+				Should(
+					elastic.NewMultiMatchQuery(query, initialFields...).
+						Type("cross_fields").
+						Operator("and"),
+					elastic.NewMultiMatchQuery(query, initialFields...).
+						Type("phrase_prefix").
+						Operator("and"),
+				),
 		).
 		Highlight(
 			elastic.NewHighlight().Fields(
