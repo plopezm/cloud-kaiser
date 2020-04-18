@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/logger"
+	"github.com/plopezm/cloud-kaiser/core/search"
 	"github.com/plopezm/cloud-kaiser/core/util"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
 )
@@ -31,8 +31,8 @@ func executeJob(w http.ResponseWriter, r *http.Request) {
 	logger.GetLogger().Debug("Called executeJob")
 	vars := mux.Vars(r)
 
-	job, err := db.FindJobByNameAndVersion(r.Context(), vars["name"], vars["version"])
-	if err != nil {
+	jobs, err := search.FindJobs(r.Context(), fmt.Sprintf("%s:%s", vars["name"], vars["version"]), 0, 1)
+	if err != nil || len(jobs) == 0 {
 		util.ResponseError(w, http.StatusNotFound, fmt.Sprintf("Job %s:%s not found", vars["name"], vars["version"]))
 		return
 	}
@@ -45,7 +45,7 @@ func executeJob(w http.ResponseWriter, r *http.Request) {
 
 	onJobFinish := make(chan engine.Runnable)
 
-	engine.Execute(engine.CreateRunnable(*job), parameters, onJobFinish)
+	engine.Execute(engine.CreateRunnable(jobs[0]), parameters, onJobFinish)
 	runnable := <-onJobFinish
 
 	util.ResponseOk(w, map[string]interface{}{

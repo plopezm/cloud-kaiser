@@ -7,9 +7,9 @@ import (
 
 	"github.com/kelseyhightower/envconfig"
 	_ "github.com/lib/pq"
-	"github.com/plopezm/cloud-kaiser/core/db"
 	"github.com/plopezm/cloud-kaiser/core/event"
 	"github.com/plopezm/cloud-kaiser/core/logger"
+	"github.com/plopezm/cloud-kaiser/core/search"
 	"github.com/plopezm/cloud-kaiser/core/types"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/engine"
 	"github.com/plopezm/cloud-kaiser/kaiser-service/interfaces"
@@ -21,13 +21,10 @@ import (
 
 //Config Contains the service configuration
 type Config struct {
-	PostgresAddress  string `envconfig:"POSTGRES_ADDR"`
-	PostgresDB       string `envconfig:"POSTGRES_DB"`
-	PostgresUser     string `envconfig:"POSTGRES_USER"`
-	PostgresPassword string `envconfig:"POSTGRES_PASSWORD"`
-	NatsAddress      string `envconfig:"NATS_ADDRESS"`
-	LogLevel         string `envconfig:"LOG_LEVEL"`
-	ServicePort      int    `envconfig:"SERVICE_PORT"`
+	ElasticSearchAddress string `envconfig:"ELASTICSEARCH_ADDRESS"`
+	NatsAddress          string `envconfig:"NATS_ADDRESS"`
+	LogLevel             string `envconfig:"LOG_LEVEL"`
+	ServicePort          int    `envconfig:"SERVICE_PORT"`
 }
 
 func main() {
@@ -44,19 +41,6 @@ func main() {
 	log := logger.GetLogger()
 	log.Debug("Starting service...")
 
-	// Connect to PostgreSQL and inject the repository. The code below retries connection every 2 seconds
-	retry.ForeverSleep(2*time.Second, func(attempt int) error {
-		addr := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", config.PostgresUser, config.PostgresPassword, config.PostgresAddress, config.PostgresDB)
-		repo, err := db.NewPostgres(addr)
-		if err != nil {
-			log.Error(err)
-			return err
-		}
-		db.SetRepository(repo)
-		return nil
-	})
-	defer db.Close()
-
 	// Connect to NATS
 	retry.ForeverSleep(2*time.Second, func(_ int) error {
 		messaging, err := event.NewNats(fmt.Sprintf("nats://%s", config.NatsAddress))
@@ -68,6 +52,19 @@ func main() {
 		return nil
 	})
 	defer event.Close()
+
+	// Connect to ElasticSearch
+	retry.ForeverSleep(2*time.Second, func(_ int) error {
+		es, err := search.NewElasticSearch(fmt.Sprintf("http://%s", config.ElasticSearchAddress))
+		if err != nil {
+			logger.GetLogger().Error(err)
+			return err
+		}
+		logger.GetLogger().Info("ElasticSearch connected!")
+		search.SetRepository(es)
+		return nil
+	})
+	defer search.Close()
 
 	servicePort := config.ServicePort
 	if servicePort == 0 {

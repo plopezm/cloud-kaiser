@@ -113,10 +113,7 @@ services:
     ports:
       - "8080"
     environment:
-      POSTGRES_ADDR: "postgres"
-      POSTGRES_DB: "kaiserdb"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      ELASTICSEARCH_ADDRESS: "elasticsearch:9200"
       NATS_ADDRESS: "nats:4222"
       LOG_LEVEL: "DEBUG"
       SERVICE_PORT: "8080"
